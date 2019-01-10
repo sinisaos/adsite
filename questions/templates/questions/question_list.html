@@ -1,0 +1,102 @@
+{% extends "base.html" %}
+
+{% load static %}
+
+{% block title %}{{ block.super }}Questions{% endblock title %}
+
+{% block navbar-right %}
+  {% if not user.is_authenticated %}
+  <li><a href="{% url 'accounts:login' %}" style="padding-right:20px;">Log in</a></li>
+  <li><a href="{% url 'accounts:signup' %}" style="padding-right:40px;">Sign up</a></li>
+  {% else %}
+    {{ block.super }}
+  {% endif %}
+{% endblock %}
+
+{% block container %}
+<style>
+@media only screen and (max-width: 600px) {
+  #button {
+    width: 100%;
+  }
+}
+</style>
+<br>
+<div class="container">
+    <div class="row">
+       <div class="col-lg-9">
+
+{% include "questions/search.html" %}
+
+    <a id="button" class="btn btn-success" href="{% url 'questions:question_ask' %}"><i class="fa fa-plus" aria-hidden="true"></i> Ask Questions</a>
+    <br><br>
+
+    <a href="{% url 'questions:question_list' %}" class="btn btn-link">All Questions</a>
+    <a href="{% url 'questions:unsolved_list' %}" class="btn btn-link">Open</a>
+    <a href="{% url 'questions:solved_list' %}" class="btn btn-link">Solved</a>
+<br><br>
+</div>
+</div>
+</div>
+<div class="container">
+    <div class="row">
+       <div class="col-lg-9">
+
+        {% if questions %}
+        {% for question in questions %}
+        <div class="list-group">
+          <div class="list-group-item list-group-item-action flex-column align-items-start">
+            <div class="d-flex w-100 justify-content-between">
+              <h4 class="mb-1"><b><a href="{{ question.get_absolute_url }}" >{{ question.qus }}</a></b>
+              <small>asked {{ question.created|timesince }} ago by <b>
+
+                  <a href="{% url 'profiles:profile' pk=question.user.pk username=question.user  %}">{{ question.user.username }}</a>
+
+              </b></small></h4><hr>
+              <p class="mb-1">{{ question.details|safe|truncatechars:500 }}</p><br>
+              {% for tag in question.tags.all %}
+              <a href="{% url 'questions:tagged' tag.slug %}" class="btn btn-xs btn-primary">{{ tag.name }}</a>
+              {% endfor %}
+              <br><br>
+              <i class="fa fa-eye" aria-hidden="true" title="Views"> {{ question.views }}</i>&ensp;
+              <i class="fa fa-comment" aria-hidden="true" title="Answers"> {{ question.get_answer_count }}</i>&ensp;
+              <i class="fa fa-thumbs-up" aria-hidden="true" title="Likes"> {{ question.likes.count }}</i>
+              {% if question.has_accepted_answer %}
+              <span class="badge pull-right">Solved</span>
+              {% endif %}
+          </div>
+      </div>
+</div>
+
+{% endfor %}
+
+{% include "questions/pagination.html" %}
+
+{% else %}
+<h3>No questions</h3>
+{% endif %}
+</div>
+{% if rank_users %}
+<div class="container">
+    <div class="row">
+       <div class="col-lg-3">
+           <h3>Top users</h3>
+           {% for user in rank_users %}
+           {% if user.profile.image %}
+                 <img class="img-circle img-responsive" src="{{ user.profile.image.url }}" style="width:35px; height:35px;">
+             {% else %}
+                 <img class="img-circle img-responsive" src="{% static 'ico/nouser.png'%}" style="width:40px; height:40px;">
+             {% endif %}
+           <p><a href="{% url 'profiles:profile' pk=user.pk username=user.username %}">{{ user.username }}</a><br>
+               <i class="fa fa-comment" aria-hidden="true" title="Accept answer"> {{ user.num_answer }}</i></p><br>
+           {% endfor %}
+       </div>
+       </div>
+     <div>
+{% endif %}
+</div>
+</div>
+</div>
+</div>
+
+{% endblock container %}

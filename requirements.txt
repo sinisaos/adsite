@@ -1,0 +1,14 @@
+Django==1.11.11
+django-appconf==1.0.2
+django-authtools==1.6.0
+django-braces==1.12.0
+django-ckeditor==5.4.0
+django-cleanup==2.1.0
+django-crispy-forms==1.7.2
+django-filter==1.0.4
+django-jet==1.0.7
+django-js-asset==1.1.0
+django-messages==0.5.3
+django-multiupload==0.5.2
+django-simplemde==0.1.2
+django-taggit==0.22.2

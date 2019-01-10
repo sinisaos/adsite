@@ -1,0 +1,155 @@
+{% extends "base.html" %}
+
+{% load static %}
+
+{% block title %}{{ block.super }}User profile{% endblock title %}
+
+{% block navbar-right %}
+  {% if not user.is_authenticated %}
+  <li><a href="{% url 'accounts:login' %}" style="padding-right:20px;">Log in</a></li>
+  <li><a href="{% url 'accounts:signup' %}" style="padding-right:40px;">Sign up</a></li>
+  {% else %}
+    {{ block.super }}
+  {% endif %}
+{% endblock %}
+
+{% block container %}
+<div class="container">
+    <div class="row">
+        <div class="col-sm-3">
+            {% if user.is_authenticated and user.username == user_profile.username %}
+            <a class="btn btn-primary pull-left" style="margin-right: 5px;" href="{% url 'profiles:update-user' pk=user.id username=user_profile.username %}">Edit account</a>
+            <form method="POST" action="{% url 'profiles:delete-user' pk=user.id username=user_profile.username %}">
+               {% csrf_token %}
+               <button type="submit" class="btn btn-danger pull-left" onclick="return confirm('Are you sure you want to delete account? All your data will be deleteted!!!');">
+                Delete account
+               </button>
+           </form>
+           <br><br><br>
+           {% endif %}
+          <ul class="list-group">
+            <li class="list-group-item text-muted">Profile <i class="fa fa-user fa-1x"></i></li>
+            <li class="list-group-item text-right"><span class="pull-left"><strong>Username</strong></span>{{ user_profile.username }}</li>
+            {% if user.is_authenticated %}
+            <li class="list-group-item text-right"><span class="pull-left"><strong>Email</strong></span>{{ user_profile.email }}</li>
+            {% endif %}
+            <li class="list-group-item text-right"><span class="pull-left"><strong>Joined</strong></span>{{ user_profile.date_joined|date:'d-m-Y' }}</li>
+            <li class="list-group-item text-right"><span class="pull-left"><strong>Last login</strong></span>{{ user_profile.last_login|timesince }}</li>
+            <li class="list-group-item text-right"><span class="pull-left"><strong>Location</strong></span>{{ user_profile.profile.location }}</li>
+          </ul>
+
+          <ul class="list-group">
+            <li class="list-group-item text-muted">Activity <i class="fa fa-dashboard fa-1x"></i></li>
+            <li class="list-group-item text-right"><span class="pull-left"><strong>Questions</strong></span>{{ question }}</li>
+            <li class="list-group-item text-right"><span class="pull-left"><strong>Answers</strong></span>{{ answer }}</li>
+            <li class="list-group-item text-right"><span class="pull-left"><strong>Accepted answers</strong></span>{{ accepted_answer }}</li>
+            <li class="list-group-item text-right"><span class="pull-left"><strong>Ads</strong></span>{{ ad_count }}</li>
+            {% if user.is_authenticated and user.username == user_profile.username %}
+                {% if messages_inbox_count %}
+                <a href="/messages/inbox/">
+                   <li class="list-group-item text-right" style="color:red;"><span class="pull-left"><strong>New messages</strong></span>{{ messages_inbox_count }}</li>
+                </a>
+                {% else %}
+                <a href="/messages/inbox/">
+                   <li class="list-group-item text-right"><span class="pull-left"><strong>New messages</strong></span> 0</li>
+                </a>
+                {% endif %}
+            {% endif %}
+            <br>
+        </div><!--/col-3-->
+        <div class="col-sm-9">
+
+          <ul class="nav nav-tabs" id="myTab">
+          {% if user_profile.profile.bio %}
+            <li class="active"><a href="#ads" data-toggle="tab">Ads</a></li>
+            <li><a href="#questions" data-toggle="tab">Questions</a></li>
+            <li><a href="#bio" data-toggle="tab">Bio</a></li>
+            {% else %}
+            <li class="active"><a href="#questions" data-toggle="tab">Questions</a></li>
+            {% endif %}
+          </ul>
+
+          <div class="tab-content">
+
+            <div class="tab-pane active" id="ads">
+                <br>
+                {% for row in ads %}
+                <div class="col-sm-4 col-lg-4 col-md-4">
+                    <div class="thumbnail" style="height: 290px;">
+                        <a href="{% url 'ads:ad' slug=row.slug %}">
+                          {% if row.images.all.0.file.url %}
+                          <img src="{{ row.images.all.0.file.url }}" style="width: 400px; height: 200px;">
+                          {% else %}
+                          <img src="{% static 'images/not-available.png' %}" style="width: 400px; height: 200px;">
+                          {% endif %}
+                        </a>
+
+                        <div class="caption">
+                            <h4 class="pull-right">{{ row.price }} kn</h4>
+                            <h4>{{ row.title }}</h4>
+                            {% if user.is_authenticated and request.user == row.user %}
+                            <a class="btn btn-primary pull-right" href="{% url 'ads:edit' pk=row.id %}"><i class="fa fa-pencil" aria-hidden="true"></i></a>
+                            <form method="POST" action="{% url 'ads:ad_delete' pk=row.id %}">
+                               {% csrf_token %}
+                               <button type="submit" class="btn btn-danger">
+                               <i class="fa fa-trash-o"></i>
+                               </button>
+                            </form>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+
+
+             </div><!--/tab-pane-->
+             <div class="tab-pane" id="questions">
+               <br>
+                <ul class="list-group">
+                {% for question in questions %}
+                    <li class="list-group-item text-right"><a href="{{question.get_absolute_url}}" class="pull-left">{{ question.qus }}</a> {{ question.updated|date:'d-m-Y' }}</li>
+                {% endfor %}
+
+                </ul>
+
+             </div><!--/tab-pane-->
+
+             <div class="tab-pane" id="bio">
+               <br>
+                <ul class="list-group">
+                    {% if user_profile.profile.bio %}
+                      <div class="tab-pane active" id="ads">
+                        <br>
+                          <div class="panel panel-default">
+                          <div class="panel-heading">
+                              <h3 class="panel-title">Bio</h3>
+                          </div>
+                              <div class="panel-body">
+                                  {{ user_profile.profile.bio }}
+                              </div>
+                          </div>
+
+
+                          <div class="row">
+                            <div class="col-md-4 col-md-offset-4 text-center">
+                              <ul class="pagination" id="myPager"></ul>
+                            </div>
+
+                        </div><!--/table-resp-->
+                        {% endif %}
+
+                </ul>
+
+             </div><!--/tab-pane-->
+
+
+
+
+</div>
+</div>
+</div>
+</div>
+
+
+
+{% endblock container %}

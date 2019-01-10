@@ -1,0 +1,185 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+{% load static %}
+
+{% block title %}{{ block.super }}All ads{% endblock %}
+
+
+{% block navbar-right %}
+  {% if not user.is_authenticated %}
+  <li><a href="{% url 'accounts:login' %}" style="padding-right:20px;">Log in</a></li>
+  <li><a href="{% url 'accounts:signup' %}" style="padding-right:40px;">Sign up</a></li>
+  {% else %}
+    {{ block.super }}
+  {% endif %}
+{% endblock %}
+
+{% block container %}
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.4.0/dist/leaflet.css"
+integrity="sha512-puBpdR0798OZvTTbP4A8Ix/l+A4dHDD0DGqYW6RQ+9jxkRFclaxxQb/SJAWZfWAkuyeQUytO7+7N4QKrDh+drA=="
+crossorigin=""/>
+<link rel="stylesheet" href="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.css" />
+<!-- Make sure you put this AFTER Leaflet's CSS -->
+<script src="https://unpkg.com/leaflet@1.4.0/dist/leaflet.js"
+integrity="sha512-QVftwZFqvtRNi0ZyCtsznlKSWOStnDORoefr1enyq5mVL4tmKB3S/EnC3rRJcxCPavG10IcrVGSmPh6Qw5lwrg=="
+crossorigin=""></script>
+<script src="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.js"></script>
+<style>
+   @media only screen and (max-width: 600px) {
+   .form-control {
+   height: 34px;
+   width: 100%;
+   margin-bottom: 15px;
+   }
+   #search {
+   float: center;
+   }
+   #button {
+   width: 100%;
+   }
+   #filter {
+   width: 100%;
+   margin-top: 15px;
+   }
+   }
+   @media only screen and (min-width: 600px) {
+   #search_form {
+   float: right;
+   width: 30%;
+   }
+   #filter {
+   width: 20%;
+   }
+   }
+</style>
+<br>
+<div class="container">
+   <div class="row">
+        <div class="col-lg-12">
+           <div id="search">
+              <form method='GET' action="{% url 'ads:search' %}" id="search_form">
+                 <input type='text' name='q' class="form-control" placeholder='Search ads' value='{{ request.GET.q }}' style="height: 34px; width:100%;"/>
+                 <button class="btn btn-success" style="position: absolute;top: 0;right: 15px;"><i class="fa fa-search" aria-hidden="true"></i></button>
+              </form>
+           </div>
+           <a id="button" class="btn btn-success" href="{% url 'ads:new' %}"><i class="fa fa-plus" aria-hidden="true"></i> New ad</a>
+
+              <a class="btn btn-info" id="filter" data-toggle="modal" data-target="#myModal"><i class="fa fa-sliders"></i> Filters</a><br>
+              <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+                 <div class="modal-dialog">
+                    <div class="modal-content">
+                      <button type="button" class="close" data-dismiss="modal">&times;</button>
+                       <form method="get" action="{% url 'ads:filter' %}">
+                          {{ filter.form | crispy }}
+                          <hr>
+                          <button type="submit" class="btn btn-primary">Filter</button>
+                       </form>
+                    </div>
+                 </div>
+           </div>
+         </div>
+         <br>
+         <br>
+          {% if ads %}
+          <div class="container">
+            <div id="map" style="width: 100%; height: 400px"></div>
+          </div>
+              {% for row in ads %}
+              <div class="col-sm-3 col-lg-3 col-md-3" style="margin-top:15px;">
+                  <div class="thumbnail" style="height: 290px;">
+                      <a href="{% url 'ads:ad' slug=row.slug %}">
+                        {% if row.images.all.0.file.url %}
+                        <img src="{{ row.images.all.0.file.url }}" style="width: 400px; height: 200px;">
+                        {% else %}
+                        <img src="{% static 'images/not-available.png' %}" style="width: 400px; height: 200px;">
+                        {% endif %}
+                      </a>
+                      <div class="caption">
+                          <h4 class="pull-right">{{ row.price }} kn</h4>
+                          <h4>{{ row.title }}</h4>
+                          {% if row.is_sold %}
+                          <h4><b>SOLD</b></h4>
+                          {% endif %}
+                      </div>
+                  </div>
+              </div>
+              {% endfor %}
+      </div>
+      <div class="text-center">
+        <ul class="pagination">
+          {% if ads.has_previous %}
+            <li><a href="search?q={{q}}&page={{ ads.previous_page_number }}">&laquo;</a></li>
+          {% else %}
+            <li class="disabled"><span>&laquo;</span></li>
+          {% endif %}
+          {% for i in ads.paginator.page_range %}
+            {% if ads.number == i %}
+              <li class="active"><span>{{ i }} <span class="sr-only">(current)</span></span></li>
+            {% else %}
+              <li><a href="search?q={{q}}&page={{ i }}">{{ i }}</a></li>
+            {% endif %}
+          {% endfor %}
+          {% if ads.has_next %}
+            <li><a href="search?q={{q}}&page={{ ads.next_page_number }}">&raquo;</a></li>
+          {% else %}
+            <li class="disabled"><span>&raquo;</span></li>
+          {% endif %}
+        </ul>
+      </div>
+
+      {% else %}
+      <div class="container">
+        <h2>No results</h2>
+      </div>
+      {% endif %}
+      </div>
+
+    </div>
+    </div>
+</div>
+</div>
+
+<script>
+
+   // Creating map options
+   var mapOptions = {
+      center: [45.55111, 18.69389],
+      zoom: 12
+   }
+
+   // Creating a map object
+   var map = new L.map('map', mapOptions);
+
+   // Creating a Layer object
+   var layer = new L.TileLayer('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>'});
+
+   // Adding layer to the map
+   map.addLayer(layer);
+
+   //var marker = new L.Marker([17.385044, 78.486671]);
+
+   //marker.addTo(map);
+   geocoder = new L.Control.Geocoder.Nominatim();
+
+   var address = [
+     {% for row in ads %}
+     ["{{ row.address }}, {{ row.city }}", "{{ row.title }}", "<a href='{% url 'ads:ad' row.slug %}'> Go to ad</a>"],
+     {% endfor %}
+   ]
+
+   console.log(address);
+   for (var i = 0; i < address.length; i++){
+       let ad = address[i][1];
+       let url = address[i][2];
+       geocoder.geocode(address[i][0] , function(results) {
+             latLng = new L.LatLng(results[0].center.lat, results[0].center.lng);
+             marker = new L.Marker (latLng);
+             marker.bindPopup(ad + url).openPopup();
+             marker.addTo(map);
+       });
+    }
+
+</script>
+
+{% endblock container %}

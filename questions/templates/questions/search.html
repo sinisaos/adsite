@@ -1,0 +1,41 @@
+<style>
+    form {
+    display: inline-block;
+    position: relative;
+    }
+    form input {
+    padding-right: 4.6em;
+    height: 34px;
+    width:100%;
+    }
+    
+    @media only screen and (max-width: 600px) {
+      .form-control {
+        height: 34px;
+        width: 100%;
+        margin-bottom: 15px;
+      }
+      #search_form {
+        float: center;
+        width: 100%;
+      }
+      #button {
+        width: 100%;
+      }
+    }
+
+    @media only screen and (min-width: 600px) {
+      #search_form {
+        float: right;
+        width: 30%;
+      }
+
+    }
+</style>
+
+<div id="search">
+    <form method="GET" id="search_form">
+        <input type='text' name='q' class="form-control" placeholder='Search questions' value='{{ request.GET.q }}' style="height: 34px; width:100%;"/>
+        <button class="btn btn-success" style="position: absolute;top: 0;right: 0;"><i class="fa fa-search" aria-hidden="true"></i></button>
+    </form>
+</div>

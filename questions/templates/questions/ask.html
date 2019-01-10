@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+{% load crispy_forms_tags %}
+
+{% block title %}{{ block.super }}Ask question{% endblock title %}
+
+
+{% block container %}
+<div class="container">
+    <div class="row">
+        <div class="col-md-8 col-md-offset-2">
+            <h3>{{ title }}</h3><br>
+            <form method="POST" action="">
+                <div class="form-group">
+                {% csrf_token %}
+                {{ form.media }}
+                <label>Question</label>
+                    <input type="text" class="form-control" {{ form.qus }}<br>
+                <label>Description</label>
+                {{ form.details }}
+                <br><br>
+                <label>Tags</label>
+                    <input type="text" class="form-control" {{ form.tags }}<br>
+                <input class="btn btn-success" type="submit" value='Submit'>
+            </form>
+        </div>
+    </div>
+</div>
+</div>
+{% endblock container %}

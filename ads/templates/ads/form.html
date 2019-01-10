@@ -1,0 +1,106 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load crispy_forms_tags %}
+{% block title %}{{ block.super }}New ad{% endblock %}
+
+{% block navbar-left %}
+
+{% endblock %}
+
+{% block navbar-right %}
+  {% if not user.is_authenticated %}
+  <li><a href="{% url 'accounts:login' %}" style="padding-right:20px;">Log in</a></li>
+  <li><a href="{% url 'accounts:signup' %}" style="padding-right:40px;">Sign up</a></li>
+  {% else %}
+    {{ block.super }}
+  {% endif %}
+{% endblock %}
+
+{% if messages %}
+<ul class="messages">
+    {% for message in messages %}
+    <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+    {% endfor %}
+</ul>
+{% endif %}
+
+{% block container %}
+
+<div class="container">
+    <div class="row">
+        <div class="col-md-8 col-md-offset-2">
+            <h2>New ad</h2><br>
+            <span>* You can add up to 3 photos. Use .jpg, .jpeg or .png files maximum size up to 250 kB.</span><br><br>
+            <form id="fileupload" action="" method="post" enctype="multipart/form-data">
+            <div class="form-group">
+              {% csrf_token %}
+                <div class="dropzone dropzone-previews" id="my-awesome-dropzone" name="files"></div>
+                <br>
+                <label for="addCategory">Category:</label><br>
+                    <select class="select" name="category" style="width:100%">
+                        <option value="{{ form.category }}</option>
+                    </select><br><br>
+                <label for="addTitle">Title:</label>
+                    <input class="form-control" placeholder="Add title" {{ form.title }}<br>
+                <label for="addBrand">Brand:</label>
+                    <input class="form-control" placeholder="Add brand" {{ form.brand }}<br>
+                <label for="addContent">Description:</label>
+                    <textarea class="form-control" placeholder="Add description" {{ form.content }}<br>
+                <label for="addAddress">Address:</label>
+                    <input class="form-control"  placeholder="Add address" {{ form.address }}<br>
+                <label for="addCity">City:</label>
+                    <input class="form-control" placeholder="Add city" {{ form.city }}<br>
+                <label for="addPrice">Price:</label>
+                    <input class="form-control" {{ form.price }}<br>
+                <label for="addSold">Is sold:</label>
+                    <input class="checkbox" {{ form.is_sold }}<br>
+                <input class="btn btn-primary" style="width:100%" type="submit" value="Send"><br><br>
+            </div>
+            </form>
+        </div>
+    </div>
+</div>
+<script src="https://code.jquery.com/jquery-1.10.2.min.js"></script>
+<script src="{% static 'js/dropzone.js' %}"></script>
+
+
+<script type="text/javascript">
+
+
+Dropzone.autoDiscover = false;
+jQuery(document).ready(function() {
+    var myDropzone = new Dropzone("div#my-awesome-dropzone" , {
+        url: "{% url 'ads:new' %}",
+        uploadMultiple: true,
+        addRemoveLinks: true,
+        parallelUploads: 100,
+        maxFilesize: 0.25,
+        acceptedFiles: ".jpeg,.jpg,.png",
+        maxFiles : 3,
+
+        sending: function (file, xhr, formData) {
+            formData.append('csrfmiddlewaretoken', getCookie('csrftoken'));
+            formData.append("files", file.name);
+        }
+    });
+
+});
+
+function getCookie(name) {
+    var cookieValue = null;
+    if (document.cookie && document.cookie != '') {
+        var cookies = document.cookie.split(';');
+        for (var i = 0; i < cookies.length; i++) {
+            var cookie = jQuery.trim(cookies[i]);
+            // Does this cookie string begin with the name we want?
+            if (cookie.substring(0, name.length + 1) == (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}
+</script>
+
+{% endblock container %}

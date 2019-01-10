@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+
+{% block title %}{{ block.super }}Sign Up{% endblock %}
+
+{% block navbar %}{% endblock navbar %}
+
+{% block form_heading %}Sign Up{% endblock %}
+
+{% block container %}
+<div class="container">
+    <div class="col-lg-offset-4 col-lg-4">
+      <h2 class="text-center">Sign up</h2>
+      <form method="post">
+        {% csrf_token %}
+        {% for field in form %}
+        <div class="form-group">
+          <p>
+            {{ field.label_tag }}<br>
+            <input class="form-control" {{ field }}
+            {% for error in field.errors %}
+              <p style="color: red">{{ error }}</p>
+            {% endfor %}
+          </p>
+        {% endfor %}
+        <br>
+        <button class="btn btn-lg btn-primary btn-block" type="submit">Sign up</button>
+        </div>
+      </form>
+      <div class="form-message">
+        <p>
+          Already signed up? <a href="{% url 'accounts:login' %}"> Log in</a>.
+        </p>
+      </div>
+    </div>
+</div>
+{% endblock container %}
+
+{% block footer %}{% endblock %}
