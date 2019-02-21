@@ -17,6 +17,7 @@ from django.conf.urls import url, include
 from django.contrib import admin
 from django.conf import settings
 from django.conf.urls.static import static
+from django.views.generic import TemplateView
 import accounts.urls
 import profiles.urls
 import questions.urls
@@ -33,6 +34,14 @@ urlpatterns = [
     url(r'^messages/', include('django_messages.urls')),
     url(r'^ads/', include(ads.urls, namespace='ads')),
     url(r'^ckeditor/', include('ckeditor_uploader.urls')),
+    url(r'^serviceworker.js',
+        (TemplateView.as_view(template_name="serviceworker.js",
+                              content_type='application/javascript', )),
+        name='serviceworker.js'),
+    url(r'^manifest.json',
+        (TemplateView.as_view(template_name="manifest.json")),
+        name='manifest.json'),
+    url(r'^offline/', views.offline, name='offline')
 ]
 
 if settings.DEBUG:

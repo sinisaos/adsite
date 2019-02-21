@@ -8,6 +8,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="{% block description %}{% endblock description %}">
     <meta name="author" content="">
+    <link rel="manifest" href="/manifest.json">
     <link rel="shortcut icon" href="{% static 'ico/favicon.ico' %}" type="image/x-icon">
 
     <title>{% block title %}{% include "brandname.html" %} - {% endblock %}</title>
@@ -20,6 +21,22 @@
     <link href="{% static 'css/dropzone.min.css' %}" rel="stylesheet">
     <link href="{% static 'css/equinox.css' %}" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" />
+    <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+    <script type="text/javascript">
+    // Initialize the service worker
+    if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.register('/serviceworker.js', {
+            scope: '.' // <--- THIS BIT IS REQUIRED
+        }).then(function (registration) {
+            // Registration was successful
+            console.log('django-progressive-web-app: ServiceWorker registration successful with scope: ', registration.scope);
+        }, function (err) {
+            // registration failed 
+            console.log('django-progressive-web-app: ServiceWorker registration failed: ', err);
+        });
+    }
+  </script>
+
     <style>
         img {
             max-width: 100%;
@@ -111,7 +128,6 @@
         {% endfor %}
       {% endif %}
     {% endblock %}
-
     <!-- Page Content -->
     {% block container %}
     {% endblock container %}
@@ -164,6 +180,7 @@
 
     <!-- jQuery -->
     <script src="{% static 'js/jquery.js' %}"></script>
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
     <!-- Bootstrap Core JavaScript -->
     <script src="{% static 'js/bootstrap.min.js' %}"></script>
     <script src="{% static 'js/lightbox.min.js' %}"></script>

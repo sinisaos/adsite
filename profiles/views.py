@@ -6,7 +6,7 @@ from django.shortcuts import redirect
 from django.contrib import messages
 from django.views.generic.edit import DeleteView
 from questions.models import Question, Answer
-from ads.models import Ad
+from ads.models import Ad, Rent
 from .forms import ProfileForm
 
 
@@ -23,6 +23,7 @@ def user_profile(request, pk, username):
     answer = Answer.objects.filter(user=user).count()
     accepted_answer = Answer.objects.filter(
         user=user, is_accepted=True).count()
+    rented_items = Rent.objects.filter(client=user)
 
     context = {'user_profile': user,
                'question': question,
@@ -30,7 +31,9 @@ def user_profile(request, pk, username):
                'accepted_answer': accepted_answer,
                'questions': questions,
                'ads': ads,
-               'ad_count': ad_count}
+               'ad_count': ad_count,
+               'rented_items': rented_items
+               }
 
     return render(request, 'user_profile.html', context)
 

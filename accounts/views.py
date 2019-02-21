@@ -2,6 +2,7 @@ from __future__ import unicode_literals
 from django.urls import reverse_lazy
 from django.contrib.auth import get_user_model
 from django.shortcuts import redirect
+from django.core.urlresolvers import reverse
 from django.views.generic.edit import FormView, DeleteView, UpdateView
 from django.contrib import messages
 from authtools import views as authviews
@@ -33,7 +34,8 @@ class SignUpView(FormView):
         email_from = settings.EMAIL_HOST_USER
         recipient_list = [email, ]
         send_mail(subject, message, email_from, recipient_list)
-        return redirect('home')
+        success_url = reverse('ads:index')
+        return redirect(success_url)
 
 
 class UserDeleteView(DeleteView):
