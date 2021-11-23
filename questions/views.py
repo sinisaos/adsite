@@ -129,7 +129,7 @@ class QuestionLikeToggle(RedirectView):
         obj = get_object_or_404(Question, slug=slug)
         url_ = obj.get_absolute_url()
         user = self.request.user
-        if user.is_authenticated():
+        if user.is_authenticated:
             if user in obj.likes.all():
                 obj.likes.remove(user)
             else:
@@ -143,7 +143,7 @@ def answer_likes(request, slug=None, pk=None):
     answer = get_object_or_404(Answer, pk=pk)
     user = request.user
     session_key = "viewed_answer_{}".format(answer.pk)
-    if not request.session.get(session_key, False) and user.is_authenticated():
+    if not request.session.get(session_key, False) and user.is_authenticated:
         answer.likes += 1
         answer.save(update_fields=["likes"])
         request.session[session_key] = True
@@ -156,7 +156,7 @@ def answer_dislikes(request, slug=None, pk=None):
     answer = get_object_or_404(Answer, pk=pk)
     user = request.user
     session_key = "viewed_answer_{}".format(answer.pk)
-    if not request.session.get(session_key, False) and user.is_authenticated():
+    if not request.session.get(session_key, False) and user.is_authenticated:
         answer.dislikes += 1
         answer.save(update_fields=["dislikes"])
         request.session[session_key] = True
