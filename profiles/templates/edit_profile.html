@@ -2,46 +2,45 @@
 
 {% load static %}
 
- {% load crispy_forms_tags %}
+{% load crispy_forms_tags %}
 
 {% block title %}{{ block.super }}User profile{% endblock title %}
 
 {% block navbar-right %}
-  {% if not user.is_authenticated %}
-  <li><a href="{% url 'accounts:login' %}" style="padding-right:20px;">Log in</a></li>
-  <li><a href="{% url 'accounts:signup' %}" style="padding-right:40px;">Sign up</a></li>
-  {% else %}
-    {{ block.super }}
-  {% endif %}
+{% if not user.is_authenticated %}
+<li><a href="{% url 'accounts:login' %}" style="padding-right:20px;">Log in</a></li>
+<li><a href="{% url 'accounts:signup' %}" style="padding-right:40px;">Sign up</a></li>
+{% else %}
+{{ block.super }}
+{% endif %}
 {% endblock %}
 
 {% block container %}
 <div class="container">
-    <div class="row">
-        <div class="col-md-8 col-md-offset-2">
-            <h3>Edit profile</h3>
-                <form method="post" enctype="multipart/form-data">
-                  {% csrf_token %}
-
-                  <div class="form-group">
-                    <p>
-                      <label>Biography</label><br>
-                      <textarea class="form-control" rows="8" cols="80" {{ profile_form.bio }}<br>
-                      <label>Location</label><br>
-                      <input type="text" class="form-control" {{ profile_form.location }}<br>
-                      <label>Image</label><br>
-                      {% if user.profile.image %}
-                            <img class="img-circle img-responsive" src="{{ user.profile.image.url }}">
-                        {% else %}
-                            <img class="img-circle img-responsive" src="{% static 'ico/nouser.png'%}">
-                        {% endif %}
-                      <br><br>
-                      {{ profile_form.image }}<br>
-                      <button class="btn btn-primary" type="submit">Update</button>
-                    </p>
-                </div>
-                </form>
+  <div class="row">
+    <div class="col-md-8 col-md-offset-2">
+      <h3>Edit profile</h3>
+      <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        <div class="form-group">
+          <p>
+            <label>Biography</label><br>
+            <textarea class="form-control" rows="8" cols="80" {{ profile_form.bio }}<br>
+              <label>Location</label><br>
+              <input type="text" class="form-control" {{ profile_form.location }}<br>
+              <label>Image</label><br>
+              {% if user.profile.image %}
+                    <img class="img-circle img-responsive" src="{{ user.profile.image.url }}">
+                {% else %}
+                    <img class="img-circle img-responsive" src="{% static 'ico/nouser.png'%}">
+                {% endif %}
+              <br><br>
+              {{ profile_form.image }}<br>
+              <button class="btn btn-primary" type="submit">Update</button>
+            </p>
         </div>
+      </form>
     </div>
+  </div>
 </div>
 {% endblock container %}

@@ -1,9 +1,9 @@
 
 var staticCacheName = "django-pwa-v" + new Date().getTime();
-const offlineUrl = 'http://127.0.0.1:8000/offline/';
+const offlineUrl = 'https://sinisaos.pythonanywhere.com/offline/';
 var filesToCache = [
-    offlineUrl,
     '/',
+    offlineUrl,
     '/static/images/icons/icon-72x72.png',
     '/static/images/icons/icon-96x96.png',
     '/static/images/icons/icon-128x128.png',

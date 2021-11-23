@@ -1,15 +1,18 @@
 {% extends "base.html" %}
-{% load static %}
-{% block title %}{{ block.super }}Single Ad{% endblock %}
 
-{% block navbar-right %}
-  {% if not user.is_authenticated %}
-  <li><a href="{% url 'accounts:login' %}" style="padding-right:20px;">Log in</a></li>
-  <li><a href="{% url 'accounts:signup' %}" style="padding-right:40px;">Sign up</a></li>
-  {% else %}
-    {{ block.super }}
-  {% endif %}
-{% endblock %}
+  {% load static %}
+  {% load crispy_forms_tags %}
+
+  {% block title %}{{ block.super }}Single Ad{% endblock %}
+
+  {% block navbar-right %}
+    {% if not user.is_authenticated %}
+    <li><a href="{% url 'accounts:login' %}" style="padding-right:20px;">Log in</a></li>
+    <li><a href="{% url 'accounts:signup' %}" style="padding-right:40px;">Sign up</a></li>
+    {% else %}
+      {{ block.super }}
+    {% endif %}
+  {% endblock %}
 
 
 {% block container %}
@@ -28,7 +31,7 @@ crossorigin=""></script>
       {% for error in form.non_field_errors %}
         {{ error }}
       {% endfor %}
-        <a class="close" data-dismiss="alert">×</a>
+        <a class="close" data-dismiss="alert">&times;</a>
     </div>
 {% endif %}
 
@@ -39,94 +42,122 @@ crossorigin=""></script>
         <li class="active"><a data-toggle="tab" href="#home">{{ row.title }}</a></li>
         <li><a data-toggle="tab" href="#menu1">More ads from <b>{{ row.user.username }}</b></a></li>
       </ul>
-      <div class="tab-content">
-          <div id="home" class="tab-pane fade in active">
-            <div class="col-md-8">
-               <h1>{{ row.title }}</h1>
-               <label><b>Description:</b></label>
-               <p style="text-align: justify;">{{ row.content }}</p>
-               <hr>
-               <form method="POST">
-                      {% csrf_token %}
-                      <input type="hidden" name="ad_id" value="{{ row.id }}">
-                      {% for error in form.non_field_errors %}
-                        <p style="color: red">{{ error }}</p>
-                      {% endfor %}
-                      <div class="form-group mb-2">
-                            <label>Start rent:</label><br>
-                          <input type="date" style="height:34px;" class="form-control" {{ form.start_date }}
-                      </div>
-                      <div class="form-group mb-2">
-                            <label>End rent:</label><br>
-                          <input type="date" style="height:34px;" class="form-control" {{ form.end_date }}
-                      </div>
-                    {% if not request.user.is_authenticated %}
-                    <a href="{% url 'accounts:login' %}?next={{ request.path }}" class="btn btn-primary">Rent</a>
-                    {% else %}
-                      <button type="submit" class="btn btn-primary" name="submit">Rent</button>
-                    {% endif %}
+            <div class="tab-content">
+                <div id="home" class="tab-pane fade in active">
+                    <div class="col-md-8">
+                       <h1>{{ row.title }}</h1>
+                       <label><b>Description:</b></label>
+                       <p style="text-align: justify;">{{ row.content }}</p>
+                       <hr>
 
-               </form>
-                <hr>
-               <label><b>Availability:</b></label>
-               <div class="event-calendar"></div>
-               <hr>
-               <label><b>Created at:</b></label>
-               <p>{{ row.created_at|timesince }} ago by <b>{{ row.user.username }}</b></p>
-               <label><b>Location:</b></label>
-               <p>{{ row.address }}, {{ row.city }}</b></p>
-               <label><b>Category:</b></label>
-               <p>{{ row.category }}</p>
-               <label><b>Brand:</b></label>
-               <p>{{ row.brand }}</p>
-               <label><b>Price:</b></label>
-               <p>{{ row.price }} kn</p>
-               {% if row.is_sold %}
-               <h1><b>SOLD</b></h1>
-               {% else %}
-               <a href="{% url 'ads:contact' slug=row.slug %}" class="btn btn-primary" style="width: 100%;">Contact seller</a><br><br><br-->
-               {% endif %}
-            </div>
-              <div class="col-md-4">
-                 <br>
-                 {% for item in img %}
-                 <a href="{{ item.file.url }}" data-lightbox="image">
-                 <img src="{{ item.file.url }}" style="width: 100%; height: 150px; padding-bottom: 10px;"/></a>
-                 {% endfor %}
-                 <hr>
-                <div id="map" style="width: 100%; height: 300px"></div>
-          </div>
-          </div>
-          <div id="menu1" class="tab-pane fade">
-            <div class="col-lg-12">
-              <br>
-               {% for row in user_ads %}
-               <div class="col-sm-6">
-                  <div class="thumbnail" style="height: 290px;">
-                     <a href="{% url 'ads:ad' slug=row.slug %}">
-                       {% if row.images.all.0.file.url %}
-                <img src="{{ row.images.all.0.file.url }}" style="width: 100%; height: 200px;">
-                {% else %}
-                <img src="{% static 'images/not-available.png' %}" style="width: 100%; height: 200px;">
-                {% endif %}
-              </a>
-                     </a>
-                     <div class="caption">
-                        <h4 class="pull-right">{{ row.price }} kn</h4>
-                        <h4>{{ row.title }}</h4>
-                        {% if row.is_sold %}
-                        <h4><b>SOLD</b></h4>
+
+                         <form method="POST">
+                                {% csrf_token %}
+                                <input type="hidden" name="ad_id" value="{{ row.id }}">
+                                {% for error in form.non_field_errors %}
+                                  <p style="color: red">{{ error }}</p>
+                                {% endfor %}
+                                <div class="form-group mb-2">
+                                      <label>Start rent:</label><br>
+                                    <input type="date" style="height:34px;" class="form-control" {{ form.start_date }}
+                                </div>
+                                <div class="form-group mb-2">
+                                      <label>End rent:</label><br>
+                                    <input type="date" style="height:34px;" class="form-control" {{ form.end_date }}
+                                </div>
+                              {% if not request.user.is_authenticated %}
+                              <a href="{% url 'accounts:login' %}?next={{ request.path }}" class="btn btn-primary">Rent</a>
+                              {% else %}
+                                <button type="submit" class="btn btn-primary" name="submit">Rent</button>
+                              {% endif %}
+
+                         </form>
+                        <hr>
+                       <label><b>Availability:</b></label>
+                       <div class="event-calendar"></div>
+                       <hr>
+                       <label><b>Created at:</b></label>
+                       <p>{{ row.created_at|timesince }} ago by <b>{{ row.user.username }}</b></p>
+                       <label><b>Location:</b></label>
+                       <p>{{ row.address }}, {{ row.city }}</b></p>
+                       <label><b>Category:</b></label>
+                       <p>{{ row.category }}</p>
+                       <label><b>Brand:</b></label>
+                       <p>{{ row.brand }}</p>
+                       <label><b>Price:</b></label>
+                       <p>{{ row.price }} kn</p>
+                       {% if row.is_sold %}
+                       <h1><b>SOLD</b></h1>
+                       {% else %}
+                       <a href="{% url 'ads:contact' slug=row.slug %}" class="btn btn-primary" style="width: 100%;">Contact owner</a><br><br><br>
+                       {% endif %}
+                    </div>
+                    <div class="col-md-4">
+                         <br>
+                         {% for item in img %}
+                         <a href="{{ item.file.url }}" data-lightbox="image">
+                         <img src="{{ item.file.url }}" style="width: 100%; height: 150px; padding-bottom: 10px;"/></a>
+                         {% endfor %}
+                         <!--hr>
+                         <h3>Rent {{ row.title }}</h3>
+                         <form method="POST">
+                                {% csrf_token %}
+                                <input type="hidden" name="ad_id" value="{{ row.id }}">
+                                {% for error in form.non_field_errors %}
+                                  <p style="color: red">{{ error }}</p>
+                                {% endfor %}
+                                <div class="form-group mb-2">
+                                      <label>Start rent:</label><br>
+                                    <input type="date" style="height:34px;" class="form-control" {{ form.start_date }}
+                                </div>
+                                <div class="form-group mb-2">
+                                      <label>End rent:</label><br>
+                                    <input type="date" style="height:34px;" class="form-control" {{ form.end_date }}
+                                </div>
+
+                              {% if not request.user.is_authenticated %}
+                              <a href="{% url 'accounts:login' %}?next={{ request.path }}" class="btn btn-primary">Rent</a>
+                              {% else %}
+                                <button type="submit" class="btn btn-primary" name="submit">Rent</button>
+                              {% endif %}
+
+                         </form>
+                        <hr-->
+                        <div id="map" style="width: 100%; height: 300px"></div>
+                   </div>
+                   </div>
+
+
+                  <div id="menu1" class="tab-pane fade">
+                    <div class="col-lg-12">
+                      <br>
+                       {% for row in user_ads %}
+                       <div class="col-sm-6">
+                          <div class="thumbnail" style="height: 290px;">
+                             <a href="{% url 'ads:ad' slug=row.slug %}">
+                               {% if row.images.all.0.file.url %}
+                        <img src="{{ row.images.all.0.file.url }}" style="width: 100%; height: 200px;">
+                        {% else %}
+                        <img src="{% static 'images/not-available.png' %}" style="width: 100%; height: 200px;">
                         {% endif %}
-                     </div>
-                  </div>
-               </div>
-               {% endfor %}
-            </div>
-         </div>
-      </div>
-   </div>
-</div>
-</div>
+                      </a>
+                             </a>
+                             <div class="caption">
+                                <h4 class="pull-right">{{ row.price }} kn</h4>
+                                <h4>{{ row.title }}</h4>
+                                {% if row.is_sold %}
+                                <h4><b>SOLD</b></h4>
+                                {% endif %}
+                             </div>
+                          </div>
+                       </div>
+                       {% endfor %}
+                    </div>
+                 </div>
+              </div>
+           </div>
+        </div>
+
 
 <script src="{% static 'js/jquery.js' %}"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.23.0/moment.min.js"></script>
@@ -138,7 +169,7 @@ const events = [
       {
         start: '{{i.start_date|date:"Y-m-d"}}',
         end: moment('{{i.end_date| date:"Y-m-d"}}').add(1, 'days'),
-        title: 'Rented by {{i.client}}',
+        title: '{{i.client}}',
         url: '{% url "profiles:profile" pk=i.client.pk username=i.client %}'
       },
   {% endfor %}
@@ -155,8 +186,8 @@ const events = [
 
    // Creating map options
    var mapOptions = {
-      center: [45.55111, 18.69389],
-      zoom: 10
+      center: [0.000000, 0.000000],
+      zoom: 0
    }
 
    // Creating a map object

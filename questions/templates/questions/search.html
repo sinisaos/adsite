@@ -8,7 +8,6 @@
     height: 34px;
     width:100%;
     }
-    
     @media only screen and (max-width: 600px) {
       .form-control {
         height: 34px;
@@ -29,12 +28,11 @@
         float: right;
         width: 30%;
       }
-
     }
 </style>
 
 <div id="search">
-    <form method="GET" id="search_form">
+    <form method='GET' id="search_form">
         <input type='text' name='q' class="form-control" placeholder='Search questions' value='{{ request.GET.q }}' style="height: 34px; width:100%;"/>
         <button class="btn btn-success" style="position: absolute;top: 0;right: 0;"><i class="fa fa-search" aria-hidden="true"></i></button>
     </form>

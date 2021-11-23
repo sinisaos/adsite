@@ -25,11 +25,11 @@
           {% for row in img %}
           <div class="col-sm-4 col-lg-4 col-md-4">
               <a href="#" class="d-block mb-4 h-100">
-              	<img src="{{ row.file.url }}" style="width:100%;height:150px;">
+              	<img src="{{ row.file.url }}" style="width:100%; height:150px;">
               </a>
               <form method="POST" action="{% url 'ads:upload_delete' pk=row.id %}"><br>
-          		{% csrf_token %}
-          		<button type="submit" class="btn btn-danger">
+          	{% csrf_token %}
+              <button type="submit" class="btn btn-danger">
                   <i class="fa fa-trash-o"></i>
               </button>
           	</form><br><br>
@@ -56,7 +56,7 @@
                 <label for="addContent">Description:</label>
                     <textarea class="form-control" placeholder="Add description" {{ form.content }}<br>
                 <label for="addAddress">Address:</label>
-                    <input class="form-control"  placeholder="Add address" {{ form.address }}<br>
+                    <input class="form-control" placeholder="Add address" {{ form.address }}<br>
                 <label for="addCity">City:</label>
                     <input class="form-control" placeholder="Add city" {{ form.city }}<br>
                 <label for="addPrice">Price:</label>

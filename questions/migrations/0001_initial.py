@@ -3,10 +3,10 @@
 from __future__ import unicode_literals
 
 import ckeditor_uploader.fields
-from django.conf import settings
-from django.db import migrations, models
 import django.db.models.deletion
 import taggit.managers
+from django.conf import settings
+from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
@@ -15,53 +15,94 @@ class Migration(migrations.Migration):
 
     dependencies = [
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
-        ('taggit', '0002_auto_20150616_2121'),
+        ("taggit", "0002_auto_20150616_2121"),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='Answer',
+            name="Answer",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('ans', ckeditor_uploader.fields.RichTextUploadingField()),
-                ('likes', models.PositiveIntegerField(default=0)),
-                ('dislikes', models.PositiveIntegerField(default=0)),
-                ('views', models.PositiveIntegerField(default=0)),
-                ('created', models.DateTimeField(auto_now_add=True)),
-                ('updated', models.DateTimeField(auto_now=True)),
-                ('is_accepted', models.BooleanField(default=False)),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("ans", ckeditor_uploader.fields.RichTextUploadingField()),
+                ("likes", models.PositiveIntegerField(default=0)),
+                ("dislikes", models.PositiveIntegerField(default=0)),
+                ("views", models.PositiveIntegerField(default=0)),
+                ("created", models.DateTimeField(auto_now_add=True)),
+                ("updated", models.DateTimeField(auto_now=True)),
+                ("is_accepted", models.BooleanField(default=False)),
             ],
             options={
-                'ordering': ['-created'],
+                "ordering": ["-created"],
             },
         ),
         migrations.CreateModel(
-            name='Question',
+            name="Question",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('qus', models.CharField(max_length=256, verbose_name='question')),
-                ('details', ckeditor_uploader.fields.RichTextUploadingField()),
-                ('slug', models.SlugField(max_length=256, unique=True)),
-                ('created', models.DateTimeField(auto_now_add=True)),
-                ('updated', models.DateTimeField(auto_now=True)),
-                ('views', models.PositiveIntegerField(default=0)),
-                ('has_accepted_answer', models.BooleanField(default=False)),
-                ('likes', models.ManyToManyField(blank=True, related_name='question_likes', to=settings.AUTH_USER_MODEL)),
-                ('tags', taggit.managers.TaggableManager(help_text='A comma-separated list of tags.', through='taggit.TaggedItem', to='taggit.Tag', verbose_name='Tags')),
-                ('user', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to=settings.AUTH_USER_MODEL)),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("qus", models.CharField(max_length=256, verbose_name="question")),
+                ("details", ckeditor_uploader.fields.RichTextUploadingField()),
+                ("slug", models.SlugField(max_length=256, unique=True)),
+                ("created", models.DateTimeField(auto_now_add=True)),
+                ("updated", models.DateTimeField(auto_now=True)),
+                ("views", models.PositiveIntegerField(default=0)),
+                ("has_accepted_answer", models.BooleanField(default=False)),
+                (
+                    "likes",
+                    models.ManyToManyField(
+                        blank=True,
+                        related_name="question_likes",
+                        to=settings.AUTH_USER_MODEL,
+                    ),
+                ),
+                (
+                    "tags",
+                    taggit.managers.TaggableManager(
+                        help_text="A comma-separated list of tags.",
+                        through="taggit.TaggedItem",
+                        to="taggit.Tag",
+                        verbose_name="Tags",
+                    ),
+                ),
+                (
+                    "user",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        to=settings.AUTH_USER_MODEL,
+                    ),
+                ),
             ],
             options={
-                'ordering': ['-created'],
+                "ordering": ["-created"],
             },
         ),
         migrations.AddField(
-            model_name='answer',
-            name='question',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='questions.Question'),
+            model_name="answer",
+            name="question",
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.CASCADE, to="questions.Question"
+            ),
         ),
         migrations.AddField(
-            model_name='answer',
-            name='user',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to=settings.AUTH_USER_MODEL),
+            model_name="answer",
+            name="user",
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.CASCADE, to=settings.AUTH_USER_MODEL
+            ),
         ),
     ]

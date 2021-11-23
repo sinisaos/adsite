@@ -1,25 +1,23 @@
-# -*- coding: utf-8 -*-
 from __future__ import unicode_literals
+
+from ckeditor_uploader.fields import RichTextUploadingField
 from django.conf import settings
 from django.db import models
 from django.urls import reverse
 from django.utils.text import slugify
 from taggit.managers import TaggableManager
-from ckeditor_uploader.fields import RichTextUploadingField
-
 
 User = settings.AUTH_USER_MODEL
 
 
 class Question(models.Model):
-    user = models.ForeignKey(User)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
     qus = models.CharField(max_length=256, verbose_name="question")
     details = RichTextUploadingField()
     slug = models.SlugField(unique=True, max_length=256)
     created = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
-    likes = models.ManyToManyField(User, blank=True,
-                                   related_name='question_likes')
+    likes = models.ManyToManyField(User, blank=True, related_name="question_likes")
     views = models.PositiveIntegerField(default=0)
     has_accepted_answer = models.BooleanField(default=False)
     tags = TaggableManager()
@@ -31,14 +29,14 @@ class Question(models.Model):
         return reverse("questions:question_detail", kwargs={"slug": self.slug})
 
     class Meta:
-        ordering = ['-created']
+        ordering = ["-created"]
 
     def _get_unique_slug(self):
         slug = slugify(self.qus)
         unique_slug = slug
         num = 1
         while Question.objects.filter(slug=unique_slug).exists():
-            unique_slug = '{}-{}'.format(slug, num)
+            unique_slug = "{}-{}".format(slug, num)
             num += 1
         return unique_slug
 
@@ -58,8 +56,8 @@ class Question(models.Model):
 
 
 class Answer(models.Model):
-    user = models.ForeignKey(User)
-    question = models.ForeignKey(Question)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    question = models.ForeignKey(Question, on_delete=models.CASCADE)
     ans = RichTextUploadingField()
     likes = models.PositiveIntegerField(default=0)
     dislikes = models.PositiveIntegerField(default=0)
@@ -72,4 +70,4 @@ class Answer(models.Model):
         return self.question.qus
 
     class Meta:
-        ordering = ['-created']
+        ordering = ["-created"]

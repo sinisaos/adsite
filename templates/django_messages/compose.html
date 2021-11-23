@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{% load crispy_forms_tags %}
+{% block title %}{{ block.super}}Compose message{% endblock %}
+
+{% block container %}
+<br>
+<div class="container">
+    <div class="row">
+        <div class="col-lg-8 col-lg-offset-2">
+            <form action="" method="post">
+                {% csrf_token %}
+                <table>
+                    <label for="addRecipient">Recipient:</label>
+                    <input class="form-control" {{ form.recipient }}<br>
+                    <label for="addSubject">Subject:</label>
+                    <input class="form-control" {{ form.subject }}<br>
+                    <label for="addBody">Body:</label>
+                    <textarea class="form-control" {{ form.body }}<br>
+                </table>
+				<input type="submit" class="btn btn-primary" value="{% trans 'Send' %}" style="width: 100%;"/>
+			</form>
+		</div>
+	</div>
+</div>
+<br>
+{% endblock container %}

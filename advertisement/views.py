@@ -1,7 +1,8 @@
-from django.views.generic.base import TemplateView
-from django.shortcuts import render
-from ads.models import Ad
 from django.db.models import Count
+from django.shortcuts import render
+from django.views.generic.base import TemplateView
+
+from ads.models import Ad
 
 
 class HomePageView(TemplateView):
@@ -9,8 +10,9 @@ class HomePageView(TemplateView):
 
     def get_context_data(self, *args, **kwargs):
         context = super(HomePageView, self).get_context_data(*args, **kwargs)
-        context['categories'] = Ad.objects.values('category').annotate(
-            Count('category'))
+        context["categories"] = Ad.objects.values("category").annotate(
+            Count("category")
+        )
         return context
 
 

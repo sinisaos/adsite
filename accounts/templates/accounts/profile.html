@@ -8,30 +8,41 @@
 <div class="container">
    <div class="row">
       <div class="col-lg-12">
-        <ul class="list-group">
+         <ul class="list-group">
 
             <li class="list-group-item text-muted">Profile <i class="fa fa-user fa-1x"></i></li>
             {% if not user.first_name and not user.last_name %}
             {% else %}
-            <li class="list-group-item text-right"><span class="pull-left"><strong>First name</strong></span>{{ user.first_name }}</li>
-            <li class="list-group-item text-right"><span class="pull-left"><strong>Last name</strong></span>{{ user.last_name }}</li>
+            <li class="list-group-item text-right"><span class="pull-left"><strong>First name</strong></span>
+               {{ user.first_name }}</li>
+            <li class="list-group-item text-right"><span class="pull-left"><strong>Last name</strong></span>
+               {{ user.last_name }}</li>
             {% endif %}
-            <li class="list-group-item text-right"><span class="pull-left"><strong>Username</strong></span>{{ user.username }}</li>
-            <li class="list-group-item text-right"><span class="pull-left"><strong>Email</strong></span>{{ user.email }}</li>
-            <li class="list-group-item text-right"><span class="pull-left"><strong>Joined</strong></span>{{ user.date_joined }}</li>
-            <li class="list-group-item text-right"><span class="pull-left"><strong>Last login</strong></span>{{ user.last_login }}</li>
-            <li class="list-group-item text-right"><span class="pull-left"><strong>Questions</strong></span>{{ questions }}</li>
-            <li class="list-group-item text-right"><span class="pull-left"><strong>Answers</strong></span>{{ answers }}</li>
-            <li class="list-group-item text-right"><span class="pull-left"><strong>Accepted answers</strong></span>{{ accepted_answer }}</li>
+            <li class="list-group-item text-right"><span class="pull-left"><strong>Username</strong></span>
+               {{ user.username }}</li>
+            <li class="list-group-item text-right"><span class="pull-left"><strong>Email</strong></span>{{ user.email }}
+            </li>
+            <li class="list-group-item text-right"><span class="pull-left"><strong>Joined</strong></span>
+               {{ user.date_joined }}</li>
+            <li class="list-group-item text-right"><span class="pull-left"><strong>Last login</strong></span>
+               {{ user.last_login }}</li>
+            <li class="list-group-item text-right"><span class="pull-left"><strong>Questions</strong></span>
+               {{ questions }}</li>
+            <li class="list-group-item text-right"><span class="pull-left"><strong>Answers</strong></span>{{ answers }}
+            </li>
+            <li class="list-group-item text-right"><span class="pull-left"><strong>Accepted answers</strong></span>{
+               {{ accepted_answer }}</li>
          </ul>
          {% if user.is_authenticated %}
-         <a class="btn btn-primary pull-left" style="margin-right: 5px;" href="{% url 'accounts:update-user' pk=user.id %}">Edit account</a>
+         <a class="btn btn-primary pull-left" style="margin-right: 5px;"
+            href="{% url 'accounts:update-user' pk=user.id %}">Edit account</a>
          <form method="POST" action="{% url 'accounts:delete-user' pk=user.id %}">
             {% csrf_token %}
-            <button type="submit" class="btn btn-danger pull-left" onclick="return confirm('Are you sure you want to delete account? All your data will be deleteted!!!');">
-             Delete account
+            <button type="submit" class="btn btn-danger pull-left"
+               onclick="return confirm('Are you sure you want to delete account? All your data will be deleteted!!!');">
+               Delete account
             </button>
-        {% endif %}
+            {% endif %}
       </div>
    </div>
 </div>

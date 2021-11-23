@@ -1,53 +1,56 @@
- {% extends "base.html" %}
+{% extends "base.html" %}
 
-  {% load staticfiles %}
-  {% load crispy_forms_tags %}
+{% load static %}
+{% load crispy_forms_tags %}
 
-  {% block title %}{{ block.super }}Single Ad{% endblock %}
+{% block title %}{{ block.super }}Single Ad{% endblock %}
 
 
-  {% block navbar-left %}
-  <li><form class="navbar-form" action="{% url 'search' %}" method="GET">
-            <div class="input-group">
-                <input type="text" class="form-control" placeholder="Search Adsite" name="q">
-                <div class="input-group-btn">
-                    <button class="btn btn-default" type="submit"><i class="fa fa-search"></i></button>
-                </div>
-            </div>
-            </form></li>
+{% block navbar-left %}
+<li>
+  <form class="navbar-form" action="{% url 'search' %}" method="GET">
+    <div class="input-group">
+      <input type="text" class="form-control" placeholder="Search Adsite" name="q">
+      <div class="input-group-btn">
+        <button class="btn btn-default" type="submit"><i class="fa fa-search"></i></button>
+      </div>
+    </div>
+  </form>
+</li>
 {% endblock %}
 
 
-  {% block navbar-right %}
-    {% if not user.is_authenticated %}
-    <li><a href="{% url 'login' %}" style="padding-right:20px;">Log in</a></li>
-    <li><a href="{% url 'signup' %}" style="padding-right:40px;">Sign up</a></li>
-    {% else %}
-      {{ block.super }}
-    {% endif %}
-  {% endblock %}
+{% block navbar-right %}
+{% if not user.is_authenticated %}
+<li><a href="{% url 'login' %}" style="padding-right:20px;">Log in</a></li>
+<li><a href="{% url 'signup' %}" style="padding-right:40px;">Sign up</a></li>
+{% else %}
+{{ block.super }}
+{% endif %}
+{% endblock %}
 
-    {% block container %}
-    <div id="sec2" class="text-page">
-    <div class="container">
-    	<div class="row">
- 				<div class="col-md-offset-2 col-md-8">
-          <h2>Send message to owner or confirm rent</h2>
-                    <br>
-                        <form action="" method="post">
-                        {% csrf_token %}
-                        <table>
-                        {{ form.recipient.as_hidden }}
-                        <label for="addSubject">Subject:</label>
-                    <input class="form-control"{{ form.subject }}<br>
-                    <label for="addBody">Body:</label>
-                    <textarea class="form-control" {{ form.body }}<br>
-                        </table>
-                        <input type="submit" class="btn btn-primary" value="Send" style="width: 100%;"/>
-                        </form>
-                      </div>
-                      </div>
-                  </div>
-                   </div>
-                   <br>
+{% block container %}
+<div id="sec2" class="text-page">
+  <div class="container">
+    <div class="row">
+      <div class="col-md-offset-2 col-md-8">
+        <h2>Send message to owner or confirm rent</h2>
+        <br>
+        <form action="" method="post">
+          {% csrf_token %}
+          <table>
+            {{ form.recipient.as_hidden }}
+            <label for="addSubject">Subject:</label>
+            <input class="form-control" {{ form.subject }}<br>
+            <label for="addBody">Body:</label>
+            <textarea class="form-control" {{ form.body }}<br>
+          </table>
+          <input type="submit" class="btn btn-primary" value="Send" style="width: 100%;"/>
+        </form>
+      </div>
+    </div>
+    </div>
+  </div>
+</div>
+<br>
 {% endblock container %}

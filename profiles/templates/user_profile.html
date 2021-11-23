@@ -35,7 +35,10 @@
             {% endif %}
             <li class="list-group-item text-right"><span class="pull-left"><strong>Joined</strong></span>{{ user_profile.date_joined|date:'d-m-Y' }}</li>
             <li class="list-group-item text-right"><span class="pull-left"><strong>Last login</strong></span>{{ user_profile.last_login|timesince }}</li>
+            {% if user_profile.profile.location %}
             <li class="list-group-item text-right"><span class="pull-left"><strong>Location</strong></span>{{ user_profile.profile.location }}</li>
+            {% else %}
+            {% endif %}
           </ul>
 
           <ul class="list-group">
@@ -61,19 +64,21 @@
         <div class="col-sm-9">
 
           <ul class="nav nav-tabs" id="myTab">
-          {% if user_profile.profile.bio %}
+            {% if user.is_authenticated and user.username == user_profile.username %}
             <li class="active"><a href="#ads" data-toggle="tab">My items</a></li>
-            <li><a href="#rented_items" data-toggle="tab">Rented items</a></li>
-            <li><a href="#questions" data-toggle="tab">Questions</a></li>
-            <li><a href="#bio" data-toggle="tab">Bio</a></li>
+            <li><a href="#rented_items" data-toggle="tab">Rented from other</a></li>
+            <li><a href="#rented_from_me" data-toggle="tab">Rented from me</a></li>
             {% else %}
-            <li class="active"><a href="#questions" data-toggle="tab">Questions</a></li>
+            <li class="active"><a href="#ads" data-toggle="tab">Ads</a></li>
             {% endif %}
+            <li><a href="#questions" data-toggle="tab">Questions</a></li>
+            <!--li><a href="#bio" data-toggle="tab">Bio</a></li-->
           </ul>
 
           <div class="tab-content">
 
             <div class="tab-pane active" id="ads">
+
                 <br>
                 {% for row in ads %}
                 <div class="col-sm-4 col-lg-4 col-md-4">
@@ -103,7 +108,6 @@
                 </div>
             {% endfor %}
 
-
              </div><!--/tab-pane-->
              <div class="tab-pane" id="questions">
                <br>
@@ -116,19 +120,66 @@
 
              </div><!--/tab-pane-->
 
-
            <div class="tab-pane" id="rented_items">
              <br>
-              <ul class="list-group">
-              {% for item in rented_items %}
-                  <li class="list-group-item text-right"><a href="{% url 'ads:ad' slug=item.ad.slug %}" class="pull-left">{{ item.ad }}</a>Rented from <b>{{ item.start_date }}</b> to <b>{{ item.end_date }}</b></li>
-              {% endfor %}
+                <div class="table-responsive">
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th class="col-md-1">Item</th>
+		                        <th class="col-md-1">Rented from</th>
+		                        <th class="col-md-1">Start date</th>
+		                        <th class="col-md-1">End date</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                        	{% for item in rented_items %}
+                            <tr>
+                              <td><a href="{% url 'ads:ad' slug=item.ad.slug %}" class="pull-left">{{ item.ad }}</a></td>
+  		                        <td>{{ item.ad.user }}</td>
+  		                        <td>{{ item.start_date|date:'d/m/Y' }}</td>
+  		                        <td>{{ item.end_date|date:'d/m/Y' }}</td>
 
-              </ul>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
 
            </div><!--/tab-pane-->
 
-             <div class="tab-pane" id="bio">
+           <div class="tab-pane" id="rented_from_me">
+             <br>
+             <div class="table-responsive">
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th class="col-md-1">Item</th>
+		                        <th class="col-md-1">Rented by</th>
+		                        <th class="col-md-1">Start date</th>
+		                        <th class="col-md-1">End date</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                        	{% for row in ads %}
+                                {% for item in row.rent_set.all %}
+                                <tr>
+                                  <td><a href="{% url 'ads:ad' slug=item.ad.slug %}" class="pull-left">{{ item.ad }}</a></td>
+      		                        <td>{{ item.client }}</td>
+      		                        <td>{{ item.start_date|date:'d/m/Y' }}</td>
+      		                        <td>{{ item.end_date|date:'d/m/Y' }}</td>
+
+                                </tr>
+                                {% endfor %}
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+
+           </div><!--/tab-pane-->
+
+
+             <!--div class="tab-pane" id="bio">
                 <ul class="list-group">
                     {% if user_profile.profile.bio %}
                       <div class="tab-pane active" id="ads">
@@ -148,7 +199,7 @@
                               <ul class="pagination" id="myPager"></ul>
                             </div>
 
-                        </div><!--/table-resp-->
+                        </div>
                         {% endif %}
 
                 </ul>

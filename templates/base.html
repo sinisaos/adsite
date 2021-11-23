@@ -1,189 +1,194 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="en">
-{% load static %}
+
 <head>
 
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="{% block description %}{% endblock description %}">
-    <meta name="author" content="">
-    <link rel="manifest" href="/manifest.json">
-    <link rel="shortcut icon" href="{% static 'ico/favicon.ico' %}" type="image/x-icon">
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="{% block description %}Adsite made with Django{% endblock description %}">
+  <meta name="author" content="">
+  <meta name="theme-color" content="#5bc0de">
+  <link rel="manifest" href="/manifest.json">
+  <link rel="shortcut icon" href="{% static 'ico/favicon.ico' %}" type="image/x-icon">
 
-    <title>{% block title %}{% include "brandname.html" %} - {% endblock %}</title>
+  <title>{% block title %}{% include "brandname.html" %} - {% endblock %}</title>
 
-    <!-- Bootstrap core CSS -->
-    <link href="{% static 'css/bootstrap.min.css' %}" rel="stylesheet">
+  <!-- Bootstrap core CSS -->
+  <link rel="stylesheet" type="text/css" href="{% static 'css/bootstrap.min.css' %}">
 
-    <link href="{% static 'css/main.css' %}" rel="stylesheet">
-    <link href="{% static 'css/lightbox.min.css' %}" rel="stylesheet">
-    <link href="{% static 'css/dropzone.min.css' %}" rel="stylesheet">
-    <link href="{% static 'css/equinox.css' %}" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" />
-    <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
-    <script type="text/javascript">
+  <link rel="stylesheet" type="text/css" href="{% static 'css/main.css' %}">
+  <link rel="stylesheet" type="text/css" href="{% static 'css/lightbox.min.css' %}">
+  <link rel="stylesheet" type="text/css" href="{% static 'css/dropzone.min.css' %}">
+  <link rel="stylesheet" type="text/css" href="{% static 'css/equinox.css' %}">
+  <link type="text/css" rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" />
+  <script type="text/javascript">
     // Initialize the service worker
     if ('serviceWorker' in navigator) {
-        navigator.serviceWorker.register('/serviceworker.js', {
-            scope: '.' // <--- THIS BIT IS REQUIRED
-        }).then(function (registration) {
-            // Registration was successful
-            console.log('django-progressive-web-app: ServiceWorker registration successful with scope: ', registration.scope);
-        }, function (err) {
-            // registration failed 
-            console.log('django-progressive-web-app: ServiceWorker registration failed: ', err);
-        });
+      navigator.serviceWorker.register('/serviceworker.js', {
+        scope: '.' // <--- THIS BIT IS REQUIRED
+      }).then(function (registration) {
+        // Registration was successful
+        console.log('django-progressive-web-app: ServiceWorker registration successful with scope: ', registration.scope);
+      }, function (err) {
+        // registration failed :(
+        console.log('django-progressive-web-app: ServiceWorker registration failed: ', err);
+      });
     }
   </script>
 
-    <style>
-        img {
-            max-width: 100%;
-            max-height: 300px;
-        }
-    </style>
-    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
-    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
-    <!--[if lt IE 9]>
+  <style>
+    img {
+      max-width: 100%;
+      max-height: 300px;
+    }
+  </style>
+  <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+  <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+  <!--[if lt IE 9]>
         <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
         <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
     <![endif]-->
 </head>
 
 <body>
-    {% block navbar %}
-    <!-- Navigation -->
-    <nav class="navbar navbar-inverse navbar-fixed-top" role="navigation">
-        <div class="container">
-            <!-- Brand and toggle get grouped for better mobile display -->
-            <div class="navbar-header">
-                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
-                    <span class="sr-only">Toggle navigation</span>
-                    <span class="icon-bar"></span>
-                    <span class="icon-bar"></span>
-                    <span class="icon-bar"></span>
-                </button>
-                <a class="navbar-brand" href="{% url 'home' %}">
-                    {% block navbar-brand %}
-                        {% include "brandname.html" %}
-                    {% endblock %}
-                </a>
-            </div>
-            <!-- Collect the nav links, forms, and other content for toggling -->
-        {% block navbar-menu %}
-        <div class="collapse navbar-collapse">
-          <ul class="nav navbar-nav">
-
-          </ul>
-
-          <ul class="nav navbar-nav navbar-right">
-              <li><a href="{% url 'questions:question_list' %}">Questions</a></li>
-              <li><a href="{% url 'ads:index' %}">Ads</a></li>
-            {% block navbar-right %}
-              {% if user.is_authenticated %}
-                {% if user.is_staff %}
-                <li><a href="{% url 'admin:index' %}">Admin</a></li>
-                {% endif %}
-                <li class="dropdown">
-                    <a href="#" class="dropdown-toggle profile-menu" data-toggle="dropdown">
-                        {{ user.username }}
-                        <span class="caret"></span>
-                    </a>
-                  <ul class="dropdown-menu" role="menu">
-                    <li><a href="{% url 'profiles:profile' pk=user.id username=user.username %}"><i class="fa fa-user"></i> Profile</a></li>
-                    <li><a href="{% url 'accounts:password-change' %}"><i class="fa fa-lock"></i> Change password</a></li>
-
-                        {% if messages_inbox_count %}
-                        <li><a href="/messages/inbox/"><i class="fa fa-envelope-open"></i> Messages
-                           <span class="badge" style="background-color: #3a87ad;"> {{ messages_inbox_count }}</span>
-                        </a></li>
-                        {% else %}
-                        <li><a href="/messages/inbox/"><i class="fa fa-envelope"></i> Messages
-                           <span class="badge" style="background-color: #3a87ad;"> 0</span>
-                        </a></li>
-                        </a>
-                        {% endif %}
-                    <li><a href="{% url 'accounts:logout' %}"><i class="fa fa-sign-out"></i> Logout</a></li>
-
-                  </ul>
-                </li>
-              {% endif %}
-            {% endblock %}
-          </ul>
-        </div><!--/.nav-collapse -->
-        {% endblock %}
+  {% block navbar %}
+  <!-- Navigation -->
+  <nav class="navbar navbar-inverse navbar-fixed-top" role="navigation">
+    <div class="container">
+      <!-- Brand and toggle get grouped for better mobile display -->
+      <div class="navbar-header">
+        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+          <span class="sr-only">Toggle navigation</span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+        <a class="navbar-brand" href="{% url 'home' %}">
+          {% block navbar-brand %}
+          {% include "brandname.html" %}
+          {% endblock %}
+        </a>
       </div>
+      <!-- Collect the nav links, forms, and other content for toggling -->
+      {% block navbar-menu %}
+      <div class="collapse navbar-collapse">
+        <ul class="nav navbar-nav">
+
+        </ul>
+
+        <ul class="nav navbar-nav navbar-right">
+          <li><a href="{% url 'questions:question_list' %}">Questions</a></li>
+          <li><a href="{% url 'ads:index' %}">Ads</a></li>
+          {% block navbar-right %}
+          {% if user.is_authenticated %}
+          {% if user.is_staff %}
+          <li><a href="{% url 'admin:index' %}">Admin</a></li>
+          {% endif %}
+          <li class="dropdown">
+            <a href="#" class="dropdown-toggle profile-menu" data-toggle="dropdown">
+              {{ user.username }}
+              <span class="caret"></span>
+            </a>
+            <ul class="dropdown-menu" role="menu">
+              <li><a href="{% url 'profiles:profile' pk=user.id username=user.username %}"><i class="fa fa-user"></i>
+                  Profile</a></li>
+              <li><a href="{% url 'accounts:password-change' %}"><i class="fa fa-lock"></i> Change password</a></li>
+
+              {% if messages_inbox_count %}
+              <li><a href="/messages/inbox/"><i class="fa fa-envelope"></i> Messages
+                  <span class="badge" style="background-color: #3a87ad;"> {{ messages_inbox_count }}</span>
+                </a></li>
+              {% else %}
+              <li><a href="/messages/inbox/"><i class="fa fa-envelope"></i> Messages
+                  <span class="badge" style="background-color: #3a87ad;"> 0</span>
+                </a></li>
+              </a>
+              {% endif %}
+              <li><a href="{% url 'accounts:logout' %}"><i class="fa fa-sign-out"></i> Logout</a></li>
+
+            </ul>
+          </li>
+          {% endif %}
+          {% endblock %}
+        </ul>
+      </div>
+      <!--/.nav-collapse -->
+      {% endblock %}
+    </div>
   </nav>
-    {% endblock %}
+  {% endblock %}
 
-    <!-- Flash messages -->
-    {% block messages %}
-      {% if messages %}
-        {% for message in messages %}
-          <div class="alert alert-{{ message.tags }}">
-            <a class="close" data-dismiss="alert">×</a>
-            {{ message|safe }}
-          </div>
-        {% endfor %}
-      {% endif %}
-    {% endblock %}
-    <!-- Page Content -->
-    {% block container %}
-    {% endblock container %}
+  <!-- Flash messages -->
+  {% block messages %}
+  {% if messages %}
+  {% for message in messages %}
+  <div class="alert alert-{{ message.tags }}">
+    <a class="close" data-dismiss="alert">×</a>
+    {{ message|safe }}
+  </div>
+  {% endfor %}
+  {% endif %}
+  {% endblock %}
 
-    {% block footer %}
-    <hr>
-    <footer class="footer bg-light">
-      <div class="container-fluid">
-        <div class="row">
-          <div class="col-lg-6 h-100 text-center text-lg-left my-auto">
-            <ul class="list-inline mb-2">
-              <li class="list-inline-item">
-                <a href="{% url 'questions:question_list' %}">Questions</a>
-              </li>
-              <li class="list-inline-item">&sdot;</li>
-              <li class="list-inline-item">
-                <a href="{% url 'ads:index' %}">Ads</a>
-              </li>
-              <li class="list-inline-item">&sdot;</li>
-              <li class="list-inline-item">
-                <a href="#">Terms of Use</a>
-              </li>
-            </ul>
-            <p class="text-muted small mb-4 mb-lg-0">&copy; {% include "brandname.html" %} {% now 'Y' %}. All Rights Reserved.</p>
-          </div>
-          <div class="col-lg-6 h-100 text-center text-lg-right my-auto">
-            <ul class="list-inline mb-0">
-              <li class="list-inline-item mr-3">
-                <a href="#">
-                  <i class="fa fa-facebook fa-2x fa-fw"></i>
-                </a>
-              </li>
-              <li class="list-inline-item mr-3">
-                <a href="#">
-                  <i class="fa fa-twitter fa-2x fa-fw"></i>
-                </a>
-              </li>
-              <li class="list-inline-item">
-                <a href="#">
-                  <i class="fa fa-instagram fa-2x fa-fw"></i>
-                </a>
-              </li>
-            </ul>
-          </div>
+  <!-- Page Content -->
+  {% block container %}
+  {% endblock container %}
+
+  {% block footer %}
+  <hr>
+  <footer class="footer bg-light">
+    <div class="container-fluid">
+      <div class="row">
+        <div class="col-lg-6 h-100 text-center text-lg-left my-auto">
+          <ul class="list-inline mb-2">
+            <li class="list-inline-item">
+              <a href="{% url 'questions:question_list' %}">Questions</a>
+            </li>
+            <li class="list-inline-item">&sdot;</li>
+            <li class="list-inline-item">
+              <a href="{% url 'ads:index' %}">Ads</a>
+            </li>
+            <li class="list-inline-item">&sdot;</li>
+            <li class="list-inline-item">
+              <a href="#">Terms of Use</a>
+            </li>
+          </ul>
+          <p class="text-muted small mb-4 mb-lg-0">&copy; {% include "brandname.html" %} {% now 'Y' %}. All Rights
+            Reserved.</p>
+        </div>
+        <div class="col-lg-6 h-100 text-center text-lg-right my-auto">
+          <ul class="list-inline mb-0">
+            <li class="list-inline-item mr-3">
+              <a href="#">
+                <i class="fa fa-facebook fa-2x fa-fw"></i>
+              </a>
+            </li>
+            <li class="list-inline-item mr-3">
+              <a href="#">
+                <i class="fa fa-twitter fa-2x fa-fw"></i>
+              </a>
+            </li>
+            <li class="list-inline-item">
+              <a href="#">
+                <i class="fa fa-instagram fa-2x fa-fw"></i>
+              </a>
+            </li>
+          </ul>
         </div>
       </div>
-    </footer>
+    </div>
+  </footer>
 
-    {% endblock %}
+  {% endblock %}
 
-    <!-- jQuery -->
-    <script src="{% static 'js/jquery.js' %}"></script>
-    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
-    <!-- Bootstrap Core JavaScript -->
-    <script src="{% static 'js/bootstrap.min.js' %}"></script>
-    <script src="{% static 'js/lightbox.min.js' %}"></script>
+  <!-- jQuery -->
+  <script src="{% static 'js/jquery.js' %}"></script>
+  <!-- Bootstrap Core JavaScript -->
+  <script src="{% static 'js/bootstrap.min.js' %}"></script>
+  <script src="{% static 'js/lightbox.min.js' %}"></script>
 </body>
 
 </html>

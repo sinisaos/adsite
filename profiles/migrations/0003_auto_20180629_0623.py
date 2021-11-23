@@ -8,13 +8,13 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('profiles', '0002_auto_20180628_2022'),
+        ("profiles", "0002_auto_20180628_2022"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='profile',
-            name='image',
-            field=models.FileField(blank=True, null=True, upload_to='attachments/'),
+            model_name="profile",
+            name="image",
+            field=models.FileField(blank=True, null=True, upload_to="attachments/"),
         ),
     ]

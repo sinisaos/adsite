@@ -3,52 +3,53 @@
 {% block title %}{{ block.super }}Tags{% endblock title %}
 
 {% block navbar-right %}
-  {% if not user.is_authenticated %}
-  <li><a href="{% url 'accounts:login' %}" style="padding-right:20px;">Log in</a></li>
-  <li><a href="{% url 'accounts:signup' %}" style="padding-right:40px;">Sign up</a></li>
-  {% else %}
-    {{ block.super }}
-  {% endif %}
+{% if not user.is_authenticated %}
+<li><a href="{% url 'accounts:login' %}" style="padding-right:20px;">Log in</a></li>
+<li><a href="{% url 'accounts:signup' %}" style="padding-right:40px;">Sign up</a></li>
+{% else %}
+{{ block.super }}
+{% endif %}
 {% endblock %}
 
 
 {% block container %}
 <div class="container">
 
-<div class="row">
+  <div class="row">
     <div class="col col-sm-8">
-        <h3>Tags: "{{ tag }}"</h3>
+      <h3>Tags: "{{ tag }}"</h3>
     </div>
 
-</div>
-<br>
+  </div>
+  <br>
 
-    {% if questions %}
-    {% for question in questions %}
+  {% if questions %}
+  {% for question in questions %}
 
 
-    <div class="list-group">
-      <div class="list-group-item list-group-item-action flex-column align-items-start">
-        <div class="d-flex w-100 justify-content-between">
-          <h4 class="mb-1"><b><a href="{{ question.get_absolute_url }}" >{{ question.qus }}</a></b>
+  <div class="list-group">
+    <div class="list-group-item list-group-item-action flex-column align-items-start">
+      <div class="d-flex w-100 justify-content-between">
+        <h4 class="mb-1"><b><a href="{{ question.get_absolute_url }}">{{ question.qus }}</a></b>
           <small>asked {{ question.created|timesince }} ago by <b>
-          <a href="{% url 'profiles:profile' pk=question.user.pk username=question.user %}">{{ question.user.username }}</a>
-      </b></small></h4><hr>
-          <p class="mb-1">{{ question.details|safe|linebreaks|truncatechars:500 }}</p><br>
-          {% for tag in question.tags.all %}
-          <a href="{% url 'questions:tagged' tag.slug %}" class="btn btn-xs btn-primary">{{ tag.name }}</a>
-          {% endfor %}
-        </div>
-
-
+              <a href="{% url 'profiles:profile' pk=question.user.pk username=question.user %}">
+                {{ question.user.username }}</a>
+            </b></small>
+        </h4>
+        <hr>
+        <p class="mb-1">{{ question.details|safe|linebreaks|truncatechars:500 }}</p><br>
+        {% for tag in question.tags.all %}
+        <a href="{% url 'questions:tagged' tag.slug %}" class="btn btn-xs btn-primary">{{ tag.name }}</a>
+        {% endfor %}
       </div>
     </div>
-    {% endfor %}
+  </div>
+  {% endfor %}
 
-    {% include "questions/pagination.html" %}
+  {% include "questions/pagination.html" %}
 
-    {% else %}
-        <p>No questions are available. </p>
-    {% endif %}
+  {% else %}
+  <p>No questions are available. </p>
+  {% endif %}
 </div>
 {% endblock container %}

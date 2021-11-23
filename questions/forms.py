@@ -1,6 +1,7 @@
-from django import forms
-from .models import Question, Answer
 from ckeditor.widgets import CKEditorWidget
+from django import forms
+
+from .models import Answer, Question
 
 
 class QuestionForm(forms.ModelForm):

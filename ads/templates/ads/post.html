@@ -2,41 +2,38 @@
 {% block title %}{{ block.super }}One Ad{% endblock %}
 
 {% block navbar-left %}
-  
+
 {% endblock %}
 
 {% block navbar-right %}
-  {% if not user.is_authenticated %}
-  <li><a href="{% url 'accounts:login' %}" style="padding-right:20px;">Log in</a></li>
-  <li><a href="{% url 'accounts:signup' %}" style="padding-right:40px;">Sign up</a></li>
-  {% else %}
-    {{ block.super }}
-  {% endif %}
+{% if not user.is_authenticated %}
+<li><a href="{% url 'accounts:login' %}" style="padding-right:20px;">Log in</a></li>
+<li><a href="{% url 'accounts:signup' %}" style="padding-right:40px;">Sign up</a></li>
+{% else %}
+{{ block.super }}
+{% endif %}
 {% endblock %}
 {% block container %}
 <br><br><br><br>
 <div class="container">
-    <div class="row">
-        <div class="col-md-8"> 
-        
-        	{% for item in img %}
-          
-				<img src="{{ item.file.url }}" style="height: 100px;"/>
-       
-			{% endfor %}
-     
-   
-				<h1>{{ row.title }}</h1>
-				<p>{{ row.content }}</p>
-				<p>{{ row.created_at }}</p>
-				<p>{{ row.category }}</p>
-				<p>{{ row.user }}</p>
+  <div class="row">
+    <div class="col-md-8">
 
-<br><br>
-</div>
-</div>
+      {% for item in img %}
+
+      <img src="{{ item.file.url }}" style="height: 100px;" />
+
+      {% endfor %}
+
+
+      <h1>{{ row.title }}</h1>
+      <p>{{ row.content }}</p>
+      <p>{{ row.created_at }}</p>
+      <p>{{ row.category }}</p>
+      <p>{{ row.user }}</p>
+
+      <br><br>
+    </div>
+  </div>
 </div>
 {% endblock container%}
-
-
-

@@ -5,22 +5,19 @@
 <div class="container">
     <div class="row">
         <div class="col-md-8 col-md-offset-2">
-
             <h3>{{ title }}</h3><br>
             <form method="POST" action="">
-
-                    <div class="form-group">
+                <div class="form-group">
                     {{ form.media }}
                     {% csrf_token %}
                     <div class="form-group">
-                    <label>Answer</label><br>
+                        <label>Answer</label><br>
                         {{ form.ans }}<br><br>
-                    <input class="btn btn-success" type="submit" value='Submit'>
+                        <input class="btn btn-success" type="submit" value='Submit'>
+                    </div>
+                </div>
             </form>
         </div>
     </div>
 </div>
-</div>
-</div>
-
 {% endblock container %}

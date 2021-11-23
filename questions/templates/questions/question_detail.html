@@ -5,12 +5,12 @@
 {% block title %}{{ block.super }}Question Details{% endblock title %}
 
 {% block navbar-right %}
-  {% if not user.is_authenticated %}
-  <li><a href="{% url 'accounts:login' %}" style="padding-right:20px;">Log in</a></li>
-  <li><a href="{% url 'accounts:signup' %}" style="padding-right:40px;">Sign up</a></li>
-  {% else %}
-    {{ block.super }}
-  {% endif %}
+{% if not user.is_authenticated %}
+<li><a href="{% url 'accounts:login' %}" style="padding-right:20px;">Log in</a></li>
+<li><a href="{% url 'accounts:signup' %}" style="padding-right:40px;">Sign up</a></li>
+{% else %}
+{{ block.super }}
+{% endif %}
 {% endblock %}
 
 {% block container %}
@@ -18,121 +18,145 @@
 <div class="container">
     <div class="row">
         <div class="col-md-8 col-md-offset-2">
-    <div class="list-group">
-      <div class="list-group-item list-group-item-action flex-column align-items-start">
-        <div class="d-flex w-100 justify-content-between">
-            <div class="pull-left">
+            <div class="list-group">
+                <div class="list-group-item list-group-item-action flex-column align-items-start">
+                    <div class="d-flex w-100 justify-content-between">
+                        <div class="pull-left">
 
-          <h4 class="mb-1"><b><a href="{{ question.get_absolute_url }}" >{{ question.qus }}</a></b>
-          <small>Asked {{ question.created|timesince }} by<b>
-              <a href="{% url 'profiles:profile' pk=question.user.pk username=question.user %}">{{ question.user.username }}</a>
+                            <h4 class="mb-1"><b><a href="{{ question.get_absolute_url }}">{{ question.qus }}</a></b>
+                                <small>Asked {{ question.created|timesince }} by<b>
+                                        <a
+                                            href="{% url 'profiles:profile' pk=question.user.pk username=question.user %}">
+                                            {{ question.user.username }}
+                                        </a>
+                        </div>
+                        <div class="pull-right">
 
-          </div>
-              <div class="pull-right">
+
+                            {% if question.user.profile.image %}
+                            <img class="img-circle img-responsive" src="{{ question.user.profile.image.url }}"
+                                style="width:35px; height:35px;">
+                            {% else %}
+                            <img class="img-circle img-responsive" src="{% static 'ico/nouser.png'%}"
+                                style="width:40px; height:40px;">
+                            {% endif %}
+                        </div>
+                        <br>
+                        <span style="padding-left: 10px;">
+                            {% if request.user == question.user %}
+                            <a href="{% url 'questions:question_update' slug=question.slug  %}">Edit</a>&nbsp;/
+                            <a href="{% url 'questions:question_delete' slug=question.slug  %}">Delete</a>
+                            {% endif %}
 
 
-              {% if question.user.profile.image %}
-                    <img class="img-circle img-responsive" src="{{ question.user.profile.image.url }}" style="width:35px; height:35px;">
-                {% else %}
-                    <img class="img-circle img-responsive" src="{% static 'ico/nouser.png'%}" style="width:40px; height:40px;">
-                {% endif %}
+                        </span>
+                        </b></small></h4>
+
+                        <hr>
+                        <p class="mb-1">{{ question.details|safe|linebreaks }}</p><br>
+                        {% for tag in question.tags.all %}
+                        <a href="{% url 'questions:tagged' tag.slug %}" class="btn btn-xs btn-primary">
+                            {{ tag.name }}
+                        </a>
+                        {% endfor %}
+                        {% if user.is_authenticated %}
+                        <a href="{{ question.get_like_url }}" class="pull-right" style="color:#33cc33;"><i
+                                class="fa fa-thumbs-up" aria-hidden="true" title="Like">
+                                {{ question.likes.count }}</i></a>
+                        {% else %}
+                        <a href="{% url 'accounts:login' %}?next={{ request.path }}" class="pull-right"
+                            style="color:#33cc33;"><i class="fa fa-thumbs-up" aria-hidden="true" title="Like">
+                                {{ question.likes.count }}</i></a>
+                        {% endif %}
+
+                    </div>
                 </div>
                 <br>
-              <span style="padding-left: 10px;" >
-              {% if request.user == question.user %}
-                  <a href="{% url 'questions:question_update' slug=question.slug  %}">Edit</a>&nbsp;/
-                  <a href="{% url 'questions:question_delete' slug=question.slug  %}">Delete</a>
-              {% endif %}
+                {% if request.user.is_authenticated %}
+                <form method="POST" action="">
+                    <div class="form-group">
+                        {{ form.media }}
+                        {% csrf_token %}
+                        <div class="form-group">
+                            <label>Answer</label><br>
+                            {{ form.ans }}
+                            <br><br>
 
-
-          </span>
-          </b></small></h4>
-
-          <hr>
-          <p class="mb-1">{{ question.details|safe|linebreaks }}</p><br>
-          {% for tag in question.tags.all %}
-          <a href="{% url 'questions:tagged' tag.slug %}" class="btn btn-xs btn-primary">{{ tag.name }}</a>
-          {% endfor %}
-          {% if user.is_authenticated %}
-          <a href="{{ question.get_like_url }}" class="pull-right" style="color:#33cc33;"><i class="fa fa-thumbs-up" aria-hidden="true" title="Like"> {{ question.likes.count }}</i></a>
-          {% else %}
-          <a href="{% url 'accounts:login' %}?next={{ request.path }}" class="pull-right" style="color:#33cc33;"><i class="fa fa-thumbs-up" aria-hidden="true" title="Like"> {{ question.likes.count }}</i></a>
-          {% endif %}
-
+                            <input class="btn btn-success" type="submit" value='Submit'>
+                </form>
+            </div>
         </div>
-    </div>
-<br>
-{% if request.user.is_authenticated %}
-<form method="POST" action="">
-    <div class="form-group">
-        {{ form.media }}
-        {% csrf_token %}
-        <div class="form-group">
-        <label>Answer</label><br>
-        {{ form.ans }}
-        <br><br>
-
-    <input class="btn btn-success" type="submit" value='Submit'>
-</form>
-</div>
-</div>
-{% endif %}
-<br><hr>
-<h4 class="pull-left">{{ count }} Answers</h4>
-{% if not request.user.is_authenticated %}
-<a href="{% url 'accounts:login' %}?next={{ request.path }}" class="btn btn-primary pull-right">Post answer</a>
-{% endif %}
-<br><br>
-</div>
-
-{% for answer in answers_list %}
-<div class="list-group-item list-group-item-action flex-column align-items-start">
-  <div class="d-flex w-100 justify-content-between">
-      <div class="d-flex w-100 justify-content-between">
-        <strong>
-            {% if answer.user.profile.image %}
-                  <img class="img-circle img-responsive" src="{{ answer.user.profile.image.url }}" style="width:40px; height:40px;">
-              {% else %}
-                  <img class="img-circle img-responsive" src="{% static 'ico/nouser.png'%}" style="width:40px; height:40px;">
-              {% endif %}
-
-            <a href="{% url 'profiles:profile' pk=answer.user.pk username=answer.user %}">{{ answer.user.username }}</a>
-        </strong>
-        <span style="padding-left: 5px;" >
-        {% if request.user == answer.user %}
-            <a href="{% url 'questions:answer_update' slug=answer.question.slug pk=answer.pk %}">Edit</a>&nbsp;/
-            <a href="{% url 'questions:answer_delete' slug=answer.question.slug pk=answer.pk %}">Delete</a>
         {% endif %}
-        </span>
-        <span style="float: right;" class="text-muted">
-        {{ answer.created|timesince }} ago
-        </span>
-    </div>
+        <br>
         <hr>
-        {{ answer.ans|safe }}
-        <br>
-        {% if user.is_authenticated %}
-        <a href="{% url 'questions:answer_likes' slug=question.slug pk=answer.id %}" class="pull-left" style="color:#33cc33;"><i class="fa fa-thumbs-up" aria-hidden="true" title="Like"> {{ answer.likes }}&ensp;</i></a>
-        {% else %}
-        <a href="{% url 'accounts:login' %}?next={{ request.path }}" class="pull-left" style="color:#33cc33;"><i class="fa fa-thumbs-up" aria-hidden="true" title="Like"> {{ answer.likes }}&ensp;</i></a>
+        <h4 class="pull-left">{{ count }} Answers</h4>
+        {% if not request.user.is_authenticated %}
+        <a href="{% url 'accounts:login' %}?next={{ request.path }}" class="btn btn-primary pull-right">Post answer</a>
         {% endif %}
-        {% if user.is_authenticated %}
-        <a href="{% url 'questions:answer_dislikes' slug=question.slug pk=answer.id %}" class="pull-left" style="color:#ff6666;"><i class="fa fa-thumbs-down" aria-hidden="true" title="Disike"> {{ answer.dislikes }}&ensp;</i></a>
-        {% else %}
-        <a href="{% url 'accounts:login' %}?next={{ request.path }}" class="pull-left" style="color:#ff6666;"><i class="fa fa-thumbs-down" aria-hidden="true" title="Disike"> {{ answer.dislikes }}&ensp;</i></a>
-        {% endif %}
-        {% if question.has_accepted_answer and answer.is_accepted %}
-        <span class="badge pull-right">Acepted answer</span>
-        {% elif not question.has_accepted_answer and user == question.user %}
-        <a href="{% url 'questions:accept' slug=question.slug %}" class="btn btn-primary pull-right">Accept answer</a>
         <br><br>
-        {% endif %}
-        <br>
+    </div>
 
-    </div><!-- /panel-body -->
-</div><!-- /panel panel-default -->
-<br>
- {% endfor %}
+    {% for answer in answers_list %}
+    <div class="list-group-item list-group-item-action flex-column align-items-start">
+        <div class="d-flex w-100 justify-content-between">
+            <div class="d-flex w-100 justify-content-between">
+                <strong>
+                    {% if answer.user.profile.image %}
+                    <img class="img-circle img-responsive" src="{{ answer.user.profile.image.url }}"
+                        style="width:40px; height:40px;">
+                    {% else %}
+                    <img class="img-circle img-responsive" src="{% static 'ico/nouser.png'%}"
+                        style="width:40px; height:40px;">
+                    {% endif %}
+
+                    <a href="{% url 'profiles:profile' pk=answer.user.pk username=answer.user %}">
+                        {{ answer.user.username }}</a>
+                </strong>
+                <span style="padding-left: 5px;">
+                    {% if request.user == answer.user %}
+                    <a href="{% url 'questions:answer_update' slug=answer.question.slug pk=answer.pk %}">Edit</a>&nbsp;/
+                    <a href="{% url 'questions:answer_delete' slug=answer.question.slug pk=answer.pk %}">Delete</a>
+                    {% endif %}
+                </span>
+                <span style="float: right;" class="text-muted">
+                    {{ answer.created|timesince }} ago
+                </span>
+            </div>
+            <hr>
+            {{ answer.ans|safe }}
+            <br>
+            {% if user.is_authenticated %}
+            <a href="{% url 'questions:answer_likes' slug=question.slug pk=answer.id %}" class="pull-left"
+                style="color:#33cc33;"><i class="fa fa-thumbs-up" aria-hidden="true" title="Like">
+                    {{ answer.likes }}&ensp;</i>
+            </a>
+            {% else %}
+            <a href="{% url 'accounts:login' %}?next={{ request.path }}" class="pull-left" style="color:#33cc33;"><i
+                    class="fa fa-thumbs-up" aria-hidden="true" title="Like"> {{ answer.likes }}&ensp;</i>
+            </a>
+            {% endif %}
+            {% if user.is_authenticated %}
+            <a href="{% url 'questions:answer_dislikes' slug=question.slug pk=answer.id %}" class="pull-left"
+                style="color:#ff6666;"><i class="fa fa-thumbs-down" aria-hidden="true" title="Disike">
+                    {{ answer.dislikes }}&ensp;</i>
+            </a>
+            {% else %}
+            <a href="{% url 'accounts:login' %}?next={{ request.path }}" class="pull-left" style="color:#ff6666;"><i
+                    class="fa fa-thumbs-down" aria-hidden="true" title="Disike"> {{ answer.dislikes }}&ensp;</i></a>
+            {% endif %}
+            {% if question.has_accepted_answer and answer.is_accepted %}
+            <span class="badge pull-right">Acepted answer</span>
+            {% elif not question.has_accepted_answer and user == question.user %}
+            <a href="{% url 'questions:accept' slug=question.slug %}" class="btn btn-primary pull-right">Accept
+                answer</a>
+            <br><br>
+            {% endif %}
+            <br>
+
+        </div><!-- /panel-body -->
+    </div><!-- /panel panel-default -->
+    <br>
+    {% endfor %}
 </div>
 </div><!-- /container -->
 </div>
