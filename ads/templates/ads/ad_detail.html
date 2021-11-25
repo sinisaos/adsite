@@ -1,0 +1,195 @@
+{% extends "base.html" %}
+
+{% load static %}
+{% load crispy_forms_tags %}
+
+{% block title %}{{ block.super }}Single Ad{% endblock %}
+
+{% block navbar-right %}
+{% if not user.is_authenticated %}
+<li><a href="{% url 'accounts:login' %}" style="padding-right:20px;">Log in</a></li>
+<li><a href="{% url 'accounts:signup' %}" style="padding-right:40px;">Sign up</a></li>
+{% else %}
+{{ block.super }}
+{% endif %}
+{% endblock %}
+
+
+{% block container %}
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.4.0/dist/leaflet.css"
+  integrity="sha512-puBpdR0798OZvTTbP4A8Ix/l+A4dHDD0DGqYW6RQ+9jxkRFclaxxQb/SJAWZfWAkuyeQUytO7+7N4QKrDh+drA=="
+  crossorigin="" />
+<link rel="stylesheet" href="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.css" />
+<!-- Make sure you put this AFTER Leaflet's CSS -->
+<script src="https://unpkg.com/leaflet@1.4.0/dist/leaflet.js"
+  integrity="sha512-QVftwZFqvtRNi0ZyCtsznlKSWOStnDORoefr1enyq5mVL4tmKB3S/EnC3rRJcxCPavG10IcrVGSmPh6Qw5lwrg=="
+  crossorigin=""></script>
+<script src="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.js"></script>
+
+{% if form.errors %}
+<div class="alert alert-danger">
+  {% for error in form.non_field_errors %}
+  {{ error }}
+  {% endfor %}
+  <a class="close" data-dismiss="alert">&times;</a>
+</div>
+{% endif %}
+
+<div class="container">
+  <div class="row">
+    <div class="col-md-10 col-md-offset-1">
+      <ul class="nav nav-tabs">
+        <li class="active"><a data-toggle="tab" href="#home">{{ row.title }}</a></li>
+        <li><a data-toggle="tab" href="#menu1">More ads from <b>{{ row.user.username }}</b></a></li>
+      </ul>
+      <div class="tab-content">
+        <div id="home" class="tab-pane fade in active">
+          <div class="col-md-8">
+            <h1>{{ row.title }}</h1>
+            <label><b>Description:</b></label>
+            <p style="text-align: justify;">{{ row.content }}</p>
+            <hr>
+
+
+            <form method="POST">
+              {% csrf_token %}
+              <input type="hidden" name="ad_id" value="{{ row.id }}">
+              {% for error in form.non_field_errors %}
+              <p style="color: red">{{ error }}</p>
+              {% endfor %}
+              <div class="form-group mb-2">
+                <label>Start rent:</label><br>
+                <input type="date" style="height:34px;" class="form-control" {{ form.start_date }} </div>
+                <div class="form-group mb-2">
+                  <label>End rent:</label><br>
+                  <input type="date" style="height:34px;" class="form-control" {{ form.end_date }} </div>
+                  {% if not request.user.is_authenticated %}
+                  <a href="{% url 'accounts:login' %}?next={{ request.path }}" class="btn btn-primary">Rent</a>
+                  {% else %}
+                  <button type="submit" class="btn btn-primary" name="submit">Rent</button>
+                  {% endif %}
+
+            </form>
+            <hr>
+            <label><b>Availability:</b></label>
+            <div class="event-calendar"></div>
+            <hr>
+            <label><b>Created at:</b></label>
+            <p>{{ row.created_at|timesince }} ago by <b>{{ row.user.username }}</b></p>
+            <label><b>Location:</b></label>
+            <p>{{ row.address }}, {{ row.city }}</b></p>
+            <label><b>Category:</b></label>
+            <p>{{ row.category }}</p>
+            <label><b>Brand:</b></label>
+            <p>{{ row.brand }}</p>
+            <label><b>Price:</b></label>
+            <p>{{ row.price }} kn</p>
+            {% if row.is_sold %}
+            <h1><b>SOLD</b></h1>
+            {% else %}
+            <a href="{% url 'ads:contact' slug=row.slug %}" class="btn btn-primary" style="width: 100%;">Contact
+              owner</a><br><br><br>
+            {% endif %}
+          </div>
+          <div class="col-md-4">
+            <br>
+            {% for item in img %}
+            <a href="{{ item.file.url }}" data-lightbox="image">
+              <img src="{{ item.file.url }}" style="width: 100%; height: 150px; padding-bottom: 10px;" /></a>
+            {% endfor %}
+            <div id="map" style="width: 100%; height: 300px"></div>
+          </div>
+        </div>
+
+        <div id="menu1" class="tab-pane fade">
+          <div class="col-lg-12">
+            <br>
+            {% for row in user_ads %}
+            <div class="col-sm-6">
+              <div class="thumbnail" style="height: 290px;">
+                <a href="{% url 'ads:ad_detail' slug=row.slug %}">
+                  {% if row.images.all.0.file.url %}
+                  <img src="{{ row.images.all.0.file.url }}" style="width: 100%; height: 200px;">
+                  {% else %}
+                  <img src="{% static 'images/not-available.png' %}" style="width: 100%; height: 200px;">
+                  {% endif %}
+                </a>
+                </a>
+                <div class="caption">
+                  <h4 class="pull-right">{{ row.price }} kn</h4>
+                  <h4>{{ row.title }}</h4>
+                  {% if row.is_sold %}
+                  <h4><b>SOLD</b></h4>
+                  {% endif %}
+                </div>
+              </div>
+            </div>
+            {% endfor %}
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+  <script src="{% static 'js/jquery.js' %}"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.23.0/moment.min.js"></script>
+  <script src="{% static 'js/equinox.min.js' %}"></script>
+  <script>
+
+    const events = [
+      {% for i in rented %}
+    {
+      start: '{{i.start_date|date:"Y-m-d"}}',
+        end: moment('{{i.end_date| date:"Y-m-d"}}').add(1, 'days'),
+          title: '{{i.client}}',
+            url: '{% url "profiles:profile" pk=i.client.pk username=i.client %}'
+    },
+    {% endfor %}
+
+]
+    $('.event-calendar').equinox({
+      events: events,
+    });
+
+  </script>
+
+  <script>
+
+
+    // Creating map options
+    var mapOptions = {
+      center: [0.000000, 0.000000],
+      zoom: 0
+    }
+
+    // Creating a map object
+    var map = new L.map('map', mapOptions);
+
+    // Creating a Layer object
+    var layer = new L.TileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>'
+    });
+
+    // Adding layer to the map
+    map.addLayer(layer);
+
+    //var marker = new L.Marker([17.385044, 78.486671]);
+
+    //marker.addTo(map);
+    geocoder = new L.Control.Geocoder.Nominatim();
+    var address = [
+      "{{ row.address }}, {{ row.city }}",
+    ]
+    //console.log(address);
+    for (var i = 0; i < address.length; i++) {
+      geocoder.geocode(address[i], function (results) {
+        latLng = new L.LatLng(results[0].center.lat, results[0].center.lng);
+        marker = new L.Marker(latLng);
+        marker.bindPopup('{{ row.title }}').openPopup();
+        marker.addTo(map);
+      });
+    }
+
+  </script>
+  {% endblock container %}

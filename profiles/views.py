@@ -20,7 +20,9 @@ def user_profile(request, pk, username):
     ads = Ad.objects.filter(user=user.pk)
     ad_count = Ad.objects.filter(user=user).count()
     answer = Answer.objects.filter(user=user).count()
-    accepted_answer = Answer.objects.filter(user=user, is_accepted=True).count()
+    accepted_answer = Answer.objects.filter(
+        user=user, is_accepted=True
+    ).count()
     rented_items = Rent.objects.filter(client=user)
 
     context = {
@@ -46,7 +48,9 @@ def update_profile(request, pk, username):
         )
         if profile_form.is_valid():
             profile_form.save()
-            messages.success(request, ("Your profile was successfully updated!"))
+            messages.success(
+                request, ("Your profile was successfully updated!")
+            )
             return redirect("profiles:profile", pk=pk, username=username)
         else:
             messages.error(request, ("Please correct the error below."))
@@ -55,7 +59,9 @@ def update_profile(request, pk, username):
     return render(
         request,
         "edit_profile.html",
-        {"profile_form": profile_form},
+        {
+            "profile_form": profile_form,
+        },
     )
 
 

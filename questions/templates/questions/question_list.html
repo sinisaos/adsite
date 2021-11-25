@@ -50,10 +50,8 @@
           <div class="d-flex w-100 justify-content-between">
             <h4 class="mb-1"><b><a href="{{ question.get_absolute_url }}">{{ question.qus }}</a></b>
               <small>asked {{ question.created|timesince }} ago by <b>
-
-                  <a href="{% url 'profiles:profile' pk=question.user.pk username=question.user  %}">{{
-                    question.user.username }}</a>
-
+                  <a href="{% url 'profiles:profile' pk=question.user.pk username=question.user  %}">
+                    {{ question.user.username }}</a>
                 </b></small>
             </h4>
             <hr>

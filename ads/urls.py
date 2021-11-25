@@ -4,8 +4,8 @@ from django.urls import re_path
 from . import views
 
 urlpatterns = [
-    re_path(r"^$", views.index, name="index"),
-    re_path(r"^ad/(?P<slug>[\w-]+)/$", views.ad, name="ad"),
+    re_path(r"^$", views.ads_list, name="ads_list"),
+    re_path(r"^ad/(?P<slug>[\w-]+)/$", views.ad_detail, name="ad_detail"),
     re_path(r"^edit/(?P<pk>\d+)/$", views.edit, name="edit"),
     re_path(r"^new/", login_required(views.AdView.as_view()), name="new"),
     re_path(

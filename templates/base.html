@@ -56,7 +56,7 @@
 <body>
   {% block navbar %}
   <!-- Navigation -->
-  <nav class="navbar navbar-inverse navbar-fixed-top" role="navigation">
+  <nav class="navbar navbar-default navbar-fixed-top" role="navigation">
     <div class="container">
       <!-- Brand and toggle get grouped for better mobile display -->
       <div class="navbar-header">
@@ -81,7 +81,7 @@
 
         <ul class="nav navbar-nav navbar-right">
           <li><a href="{% url 'questions:question_list' %}">Questions</a></li>
-          <li><a href="{% url 'ads:index' %}">Ads</a></li>
+          <li><a href="{% url 'ads:ads_list' %}">Ads</a></li>
           {% block navbar-right %}
           {% if user.is_authenticated %}
           {% if user.is_staff %}
@@ -149,7 +149,7 @@
             </li>
             <li class="list-inline-item">&sdot;</li>
             <li class="list-inline-item">
-              <a href="{% url 'ads:index' %}">Ads</a>
+              <a href="{% url 'ads:ads_list' %}">Ads</a>
             </li>
             <li class="list-inline-item">&sdot;</li>
             <li class="list-inline-item">

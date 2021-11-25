@@ -19,7 +19,7 @@ from .models import Ad, Attachment
 User = get_user_model()
 
 
-def index(request):
+def ads_list(request):
     queryset = Ad.objects.all().order_by("-created_at")
     ad_filter = AdFilter(request.GET, queryset=queryset)
 
@@ -33,15 +33,19 @@ def index(request):
         ads = paginator.page(paginator.num_pages)
     return render(
         request,
-        "ads/index.html",
-        {"queryset": queryset, "filter": ad_filter, "ads": ads},
+        "ads/ads_list.html",
+        {
+            "queryset": queryset,
+            "filter": ad_filter,
+            "ads": ads,
+        },
     )
 
 
-def ad(request, slug):
+def ad_detail(request, slug):
     row = get_object_or_404(Ad, slug=slug)
-    msg = Ad.objects.get(slug=slug)
-    img = msg.images.all()
+    ad_single = Ad.objects.get(slug=slug)
+    img = ad_single.images.all()
     user_ads = Ad.objects.filter(user=row.user)
     rented = Ad.objects.get(slug=slug).rent_set.all()
     form = RentForm(request.POST or None)
@@ -60,30 +64,36 @@ def ad(request, slug):
         "form": form,
         "user_ads": user_ads,
     }
-    return render(request, "ads/ad.html", context)
+    return render(request, "ads/ad_detail.html", context)
 
 
 @login_required
 def edit(request, pk):
     post = get_object_or_404(Ad, pk=pk)
-    msg = Ad.objects.get(pk=pk)
-    img = msg.images.all()[:3]
+    ad_single = Ad.objects.get(pk=pk)
+    img = ad_single.images.all()[:3]
     if request.method == "POST":
         form = AdForm(request.POST, request.FILES, instance=post)
         if form.is_valid():
             post = form.save(commit=False)
             post.user = request.user
             post.save()
-            return redirect("ads:index")
+            return redirect("ads:ads_list")
     else:
         form = AdForm(instance=post)
 
-    context = {"form": form, "img": img, "post": post}
+    context = {
+        "form": form,
+        "img": img,
+        "post": post,
+    }
     return render(request, "ads/ad_edit.html", context)
 
 
 @login_required
-def contact(request, slug, recipient=None, success_url=None, recipient_filter=None):
+def contact(
+    request, slug, recipient=None, success_url=None, recipient_filter=None
+):
     row = get_object_or_404(Ad, slug=slug)
 
     if request.method == "POST":
@@ -116,7 +126,11 @@ def contact(request, slug, recipient=None, success_url=None, recipient_filter=No
             ]
             form.fields["recipient"].initial = recipients
 
-    return render(request, "ads/contact.html", {"form": form})
+    context = {
+        "form": form,
+    }
+
+    return render(request, "ads/contact.html", context)
 
 
 class AdView(CreateView):
@@ -150,7 +164,9 @@ class AttachmentDeleteView(DeleteView):
 
 
 def filter(request):
-    ad_filter = AdFilter(request.GET, queryset=Ad.objects.all().order_by("-created_at"))
+    ad_filter = AdFilter(
+        request.GET, queryset=Ad.objects.all().order_by("-created_at")
+    )
     page = request.GET.get("page")
     paginator = Paginator(ad_filter.qs, 12)
     try:
@@ -160,7 +176,10 @@ def filter(request):
     except EmptyPage:
         ads = paginator.page(paginator.num_pages)
 
-    context = {"filter": ad_filter, "ads": ads}
+    context = {
+        "filter": ad_filter,
+        "ads": ads,
+    }
     return render(request, "ads/filter.html", context)
 
 
