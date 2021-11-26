@@ -103,7 +103,7 @@ def contact(
             form.save(sender=request.user)
             messages.info(request, "Message and email successfully sent.")
             if success_url is None:
-                success_url = reverse("ads:ad", kwargs={"slug": slug})
+                success_url = reverse("ads:ad_detail", kwargs={"slug": slug})
             if "next" in request.GET:
                 success_url = request.GET["next"]
             return HttpResponseRedirect(success_url)
@@ -137,7 +137,7 @@ class AdView(CreateView):
     model = Ad
     form_class = AdForm
     template_name = "ads/form.html"
-    success_url = reverse_lazy("ads:index")
+    success_url = reverse_lazy("ads:ads_list")
 
     def form_valid(self, form):
         form.instance.user = self.request.user
@@ -150,7 +150,7 @@ class AdDeleteView(DeleteView):
     def delete(self, request, *args, **kwargs):
         self.object = self.get_object()
         self.object.delete()
-        return redirect("ads:index")
+        return redirect("ads:ads_list")
 
 
 class AttachmentDeleteView(DeleteView):
